@@ -68,7 +68,7 @@ From the [latest release](https://github.com/TechnikWeber/DnfPilot/releases/late
 |---|---|
 | `dnfpilot-*-x86_64.AppImage` | Download, make executable, run. Or open it with [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever), which also updates it. |
 | `dnfpilot-*.noarch.rpm` | `sudo dnf install ./dnfpilot-*.noarch.rpm`. Uses the system Qt, so it looks native and is tiny. |
-| `dnfpilot-terminal` | One bash file, no Python: a kdialog menu that runs the commands in Konsole (KDE only, German). |
+| `dnfpilot-terminal` | One bash file, no Python: a kdialog menu that runs the commands in Konsole (KDE only, English or German). |
 
 Or from the source, for your user only:
 

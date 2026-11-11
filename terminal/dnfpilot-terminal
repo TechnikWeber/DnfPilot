@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # dnfpilot-terminal – the single-file variant of dnfpilot.
-# Needs nothing but bash, kdialog and Konsole (KDE Plasma). The UI is German.
+# Needs nothing but bash, kdialog and Konsole (KDE Plasma).
+# The UI is English or German, following the system locale like dnfpilot;
+# set DNFPILOT_LANG=en or =de to override.
 #
 # Without an argument: kdialog menu. With an argument: runs that mode in the
 # terminal (the menu starts itself again inside Konsole).
@@ -8,43 +10,63 @@
 # Install:  install -m755 dnfpilot-terminal ~/.local/bin/
 #           install -m644 dnfpilot-terminal.desktop ~/.local/share/applications/
 
-TITLE="Fedora aktualisieren"
+# ---------- Language ----------
+pick_lang() {
+    case "${DNFPILOT_LANG,,}" in de|en) echo "${DNFPILOT_LANG,,}"; return ;; esac
+    local v
+    for v in "$LC_ALL" "$LC_MESSAGES" "$LANG" "$LANGUAGE"; do
+        if [ -n "$v" ]; then
+            case "${v,,}" in de*) echo de ;; *) echo en ;; esac
+            return
+        fi
+    done
+    echo en
+}
+UI_LANG="$(pick_lang)"
+# t "English text" "German text"
+t() { if [ "$UI_LANG" = de ]; then printf '%s' "$2"; else printf '%s' "$1"; fi; }
+
+TITLE="$(t "Update Fedora" "Fedora aktualisieren")"
 ICON="system-software-update"
 SELF="$(readlink -f "$0")"
 
-# ---------- Menü (grafisch) ----------
+# ---------- Menu (graphical) ----------
 if [ -z "$1" ]; then
     MODE=$(kdialog --title "$TITLE" --icon "$ICON" --geometry 560x360 \
-        --radiolist "Was soll gemacht werden?" \
-        normal   "Normales Update: System + Flatpak-Apps (empfohlen)" on \
-        flatpak  "Nur Flatpak-Apps aktualisieren" off \
-        discover "Kaputtes Discover-Offline-Update abbrechen, dann updaten" off \
-        clean    "DNF macht Fehler: Paketlisten neu laden, dann updaten" off \
-        conflict "Paketkonflikte lösen (--allowerasing, kann Pakete entfernen!)" off \
-        pkcache  "Discover-/PackageKit-Zwischenspeicher leeren" off \
-        offline  "Offline-Update selbst gesteuert (beim Neustart installieren)" off \
-        reboot   "Jetzt neu starten" off) \
+        --radiolist "$(t "What should be done?" "Was soll gemacht werden?")" \
+        normal   "$(t "Normal update: system + Flatpak apps (recommended)" "Normales Update: System + Flatpak-Apps (empfohlen)")" on \
+        flatpak  "$(t "Update Flatpak apps only" "Nur Flatpak-Apps aktualisieren")" off \
+        discover "$(t "Cancel a broken Discover offline update, then update" "Kaputtes Discover-Offline-Update abbrechen, dann updaten")" off \
+        clean    "$(t "DNF fails: reload package lists, then update" "DNF macht Fehler: Paketlisten neu laden, dann updaten")" off \
+        conflict "$(t "Resolve package conflicts (--allowerasing, may remove packages!)" "Paketkonflikte lösen (--allowerasing, kann Pakete entfernen!)")" off \
+        pkcache  "$(t "Clear the Discover/PackageKit cache" "Discover-/PackageKit-Zwischenspeicher leeren")" off \
+        offline  "$(t "Offline update under your control (install on restart)" "Offline-Update selbst gesteuert (beim Neustart installieren)")" off \
+        reboot   "$(t "Restart now" "Jetzt neu starten")" off) \
         || exit 0
 
     if [ "$MODE" = conflict ]; then
         kdialog --title "$TITLE" --warningcontinuecancel \
+"$(t "Caution: this mode can remove individual packages.
+
+Before typing »y« in the terminal, read the list of
+packages that will be removed carefully." \
 "Achtung: Dieser Modus kann einzelne Pakete entfernen.
 
 Lies im Terminal vor dem »y« genau die Liste der Pakete,
-die entfernt werden sollen." || exit 0
+die entfernt werden sollen.")" || exit 0
     fi
 
     if [ "$MODE" = reboot ]; then
         kdialog --title "$TITLE" --warningcontinuecancel \
-            "Den Computer jetzt neu starten? Offene Arbeit vorher speichern." \
-            --continue-label "Jetzt neu starten" && systemctl reboot
+            "$(t "Restart the computer now? Save your open work first." "Den Computer jetzt neu starten? Offene Arbeit vorher speichern.")" \
+            --continue-label "$(t "Restart now" "Jetzt neu starten")" && systemctl reboot
         exit 0
     fi
 
     exec konsole -p tabtitle="$TITLE" -e "$SELF" "$MODE"
 fi
 
-# ---------- Ausführung (im Terminal) ----------
+# ---------- Run (in the terminal) ----------
 MODE="$1"
 bold=$'\e[1m'; green=$'\e[32m'; red=$'\e[31m'; yellow=$'\e[33m'; reset=$'\e[0m'
 
@@ -52,47 +74,56 @@ step() { printf '\n%s==> %s%s\n' "$bold$green" "$*" "$reset"; }
 info() { printf '%s%s%s\n' "$yellow" "$*" "$reset"; }
 
 fail() {
-    printf '\n%sFehler: %s%s\n' "$bold$red" "$*" "$reset"
-    kdialog --title "$TITLE" --error "Es ist ein Fehler aufgetreten:
+    printf '\n%s%s %s%s\n' "$bold$red" "$(t "Error:" "Fehler:")" "$*" "$reset"
+    kdialog --title "$TITLE" --error "$(t "Something went wrong:" "Es ist ein Fehler aufgetreten:")
 $*
 
-Details stehen im Terminalfenster.
-Tipp: Im Menü »DNF macht Fehler« oder »Paketkonflikte lösen« probieren." &
-    read -rp $'\nEnter drücken zum Schließen …'
+$(t "The details are in the terminal window.
+Tip: try »DNF fails« or »Resolve package conflicts« in the menu." \
+"Details stehen im Terminalfenster.
+Tipp: Im Menü »DNF macht Fehler« oder »Paketkonflikte lösen« probieren.")" &
+    read -rp $'\n'"$(t "Press Enter to close …" "Enter drücken zum Schließen …")"
     exit 1
 }
 
 dnf_upgrade() {
-    step "Systempakete aktualisieren (dnf upgrade --refresh $*)"
-    info "Passwort eingeben – beim Tippen sieht man nichts, das ist normal."
-    info "Bei »Is this ok [y/N]« mit  y  und Enter bestätigen."
-    sudo dnf upgrade --refresh "$@" || fail "dnf upgrade ist fehlgeschlagen."
+    step "$(t "Updating system packages" "Systempakete aktualisieren") (dnf upgrade --refresh $*)"
+    info "$(t "Enter your password – nothing shows while you type, that is normal." "Passwort eingeben – beim Tippen sieht man nichts, das ist normal.")"
+    info "$(t "At »Is this ok [y/N]« confirm with  y  and Enter." "Bei »Is this ok [y/N]« mit  y  und Enter bestätigen.")"
+    sudo dnf upgrade --refresh "$@" || fail "$(t "dnf upgrade failed." "dnf upgrade ist fehlgeschlagen.")"
 }
 
 flatpak_update() {
-    step "Flatpak-Apps aktualisieren"
-    flatpak update -y || fail "flatpak update ist fehlgeschlagen."
+    step "$(t "Updating Flatpak apps" "Flatpak-Apps aktualisieren")"
+    flatpak update -y || fail "$(t "flatpak update failed." "flatpak update ist fehlgeschlagen.")"
 }
 
 dnf_clean() {
-    step "Paketlisten neu laden (dnf clean all)"
-    sudo dnf clean all || fail "dnf clean all ist fehlgeschlagen."
+    step "$(t "Reloading package lists" "Paketlisten neu laden") (dnf clean all)"
+    sudo dnf clean all || fail "$(t "dnf clean all failed." "dnf clean all ist fehlgeschlagen.")"
 }
 
 ask_reboot() {
-    step "Prüfe, ob ein Neustart nötig ist …"
+    step "$(t "Checking whether a restart is needed …" "Prüfe, ob ein Neustart nötig ist …")"
     if dnf needs-restarting -q >/dev/null 2>&1; then
-        text="Fertig! Ein Neustart ist laut DNF nicht unbedingt nötig.
+        text="$(t "Done! According to DNF a restart is not strictly needed.
 
-Trotzdem jetzt neu starten?"
+Restart now anyway?" \
+"Fertig! Ein Neustart ist laut DNF nicht unbedingt nötig.
+
+Trotzdem jetzt neu starten?")"
     else
-        text="Fertig! Es wurden Kernel, Plasma, systemd o. Ä. aktualisiert –
+        text="$(t "Done! Kernel, Plasma, systemd or similar were updated –
+a restart is recommended.
+
+Restart now?" \
+"Fertig! Es wurden Kernel, Plasma, systemd o. Ä. aktualisiert –
 ein Neustart wird empfohlen.
 
-Jetzt neu starten?"
+Jetzt neu starten?")"
     fi
     if kdialog --title "$TITLE" --icon "$ICON" --yesno "$text" \
-        --yes-label "Jetzt neu starten" --no-label "Später"; then
+        --yes-label "$(t "Restart now" "Jetzt neu starten")" --no-label "$(t "Later" "Später")"; then
         systemctl reboot
     fi
 }
@@ -105,11 +136,11 @@ case "$MODE" in
         ;;
     flatpak)
         flatpak_update
-        kdialog --title "$TITLE" --icon "$ICON" --msgbox "Flatpak-Apps sind aktuell."
+        kdialog --title "$TITLE" --icon "$ICON" --msgbox "$(t "Flatpak apps are up to date." "Flatpak-Apps sind aktuell.")"
         ;;
     discover)
-        step "Vorgemerktes Discover-Offline-Update abbrechen"
-        sudo pkcon offline-cancel || info "(Kein Offline-Update vorgemerkt – ok.)"
+        step "$(t "Cancelling the scheduled Discover offline update" "Vorgemerktes Discover-Offline-Update abbrechen")"
+        sudo pkcon offline-cancel || info "$(t "(No offline update scheduled – ok.)" "(Kein Offline-Update vorgemerkt – ok.)")"
         dnf_clean
         dnf_upgrade
         flatpak_update
@@ -123,33 +154,36 @@ case "$MODE" in
         ;;
     conflict)
         dnf_clean
-        info "ACHTUNG: Vor dem »y« die Liste der zu ENTFERNENDEN Pakete lesen!"
+        info "$(t "CAUTION: read the list of packages to be REMOVED before typing »y«!" "ACHTUNG: Vor dem »y« die Liste der zu ENTFERNENDEN Pakete lesen!")"
         dnf_upgrade --best --allowerasing
         ask_reboot
         ;;
     pkcache)
-        step "PackageKit-Zwischenspeicher leeren (/var/cache/PackageKit)"
-        sudo sh -c 'rm -rf /var/cache/PackageKit/*' || fail "Löschen fehlgeschlagen."
-        kdialog --title "$TITLE" --icon "$ICON" --msgbox "Der Discover-/PackageKit-Zwischenspeicher wurde geleert."
+        step "$(t "Clearing the PackageKit cache" "PackageKit-Zwischenspeicher leeren") (/var/cache/PackageKit)"
+        sudo sh -c 'rm -rf /var/cache/PackageKit/*' || fail "$(t "Deleting failed." "Löschen fehlgeschlagen.")"
+        kdialog --title "$TITLE" --icon "$ICON" --msgbox "$(t "The Discover/PackageKit cache has been cleared." "Der Discover-/PackageKit-Zwischenspeicher wurde geleert.")"
         ;;
     offline)
-        step "Updates herunterladen (dnf offline download --refresh)"
-        info "Bei »Is this ok [y/N]« mit  y  und Enter bestätigen."
-        sudo dnf offline download --refresh || fail "Download ist fehlgeschlagen."
+        step "$(t "Downloading updates" "Updates herunterladen") (dnf offline download --refresh)"
+        info "$(t "At »Is this ok [y/N]« confirm with  y  and Enter." "Bei »Is this ok [y/N]« mit  y  und Enter bestätigen.")"
+        sudo dnf offline download --refresh || fail "$(t "Download failed." "Download ist fehlgeschlagen.")"
         if kdialog --title "$TITLE" --icon "$ICON" --yesno \
+"$(t "All updates are downloaded.
+
+Restart now and install them during the restart?" \
 "Alle Updates sind heruntergeladen.
 
-Jetzt neu starten und beim Neustart installieren?" \
-            --yes-label "Neu starten + installieren" --no-label "Später"; then
-            sudo dnf offline reboot -y || fail "dnf offline reboot ist fehlgeschlagen."
+Jetzt neu starten und beim Neustart installieren?")" \
+            --yes-label "$(t "Restart + install" "Neu starten + installieren")" --no-label "$(t "Later" "Später")"; then
+            sudo dnf offline reboot -y || fail "$(t "dnf offline reboot failed." "dnf offline reboot ist fehlgeschlagen.")"
         else
-            info "Später einfach im Terminal:  sudo dnf offline reboot"
+            info "$(t "Later, simply run in a terminal:  sudo dnf offline reboot" "Später einfach im Terminal:  sudo dnf offline reboot")"
         fi
         ;;
     *)
-        fail "Unbekannter Modus: $MODE"
+        fail "$(t "Unknown mode:" "Unbekannter Modus:") $MODE"
         ;;
 esac
 
-printf '\n%sAlles erledigt.%s\n' "$bold$green" "$reset"
-read -rp 'Enter drücken zum Schließen …'
+printf '\n%s%s%s\n' "$bold$green" "$(t "All done." "Alles erledigt.")" "$reset"
+read -rp "$(t "Press Enter to close …" "Enter drücken zum Schließen …")"
