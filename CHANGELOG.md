@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] - 2026-11-11
+
+- **New Fedora release:** a banner says when the next Fedora is out and
+  upgrades with `dnf system-upgrade` (download while you work, install on
+  restart). Discover does not report new releases on Fedora with the dnf5
+  PackageKit backend, so this reads fedoraproject.org/releases.json itself.
+- **Firmware:** fwupd updates appear in the list and are installed with the
+  rest (switch off with "Include firmware"); Repair → "Update firmware only".
+- **NVIDIA:** the Restart button stays locked while akmods builds the driver
+  module for a new kernel – restarting earlier ends with a black screen.
+- **Snap:** if snapd is installed, Snap updates are listed and installed too.
+- Restart detection uses rpm install times instead of `dnf needs-restarting`.
+- A collapsed Details section no longer leaves an empty gap.
+
 ## [0.1.0] - 2026-11-11
 
 First release.

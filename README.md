@@ -28,9 +28,15 @@ that point, cannot recover. Updating while the system is running avoids that.
 * **Update now** asks for your password once (polkit), then runs
   `dnf upgrade --refresh` and `flatpak update`. The bar follows dnf package by
   package; **Details** shows the full output.
+* Firmware updates (fwupd) and, if installed, Snap updates are part of the
+  same run.
+* **New Fedora release?** A banner offers the upgrade (`dnf system-upgrade`:
+  download while you work, install on restart). Discover does not show new
+  releases on Fedora with the dnf5 backend.
 * Afterwards it tells you whether a restart is needed: kernel, glibc, systemd,
   Plasma, Mesa or a graphics driver updated since boot. **Restart** is always
-  one click away.
+  one click away – except while akmods is still building the NVIDIA module for
+  a new kernel, because restarting then ends with a black screen.
 * **Repair** menu for when things go wrong:
   * cancel an offline update Discover has scheduled, then update
   * reload package lists (`dnf clean all`), then update
@@ -38,6 +44,7 @@ that point, cannot recover. Updating while the system is running avoids that.
     would be removed
   * clear the Discover/PackageKit cache
   * update Flatpak apps only
+  * update firmware only
   * download now, install during the next restart (`dnf offline`)
 
 ## Download
@@ -60,9 +67,13 @@ cd DnfPilot
 
 It needs `python3-pyside6`, which `install.sh` offers to install.
 
+For setting up a fresh install (RPM Fusion, codecs, drivers, Flathub), see
+the sibling project [DnfSetup](https://github.com/TechnikWeber/DnfSetup).
+
 ## Good to know
 
-* Only for Fedora (dnf5) and other systems with `dnf`. Flatpak is optional.
+* Only for Fedora (dnf5) and other systems with `dnf`. Flatpak, fwupd and Snap
+  are optional.
 * No Flatpak package: a sandboxed app cannot run `dnf` on the host.
 * Closing the window during an update is blocked, because stopping dnf halfway
   can leave the system in a broken state.

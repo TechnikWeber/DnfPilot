@@ -12,6 +12,9 @@
 #   upgrade-erase    dnf upgrade --refresh --best --allowerasing
 #   offline-download dnf offline download --refresh
 #   offline-reboot   dnf offline reboot
+#   firmware         fwupdmgr refresh + update (no reboot prompt; the GUI asks)
+#   snap             snap refresh
+#   sysup-download:N dnf system-upgrade download --releasever=N
 
 export LC_ALL=C LANG=C
 # keep dnf off the terminal-only progress bars and colours
@@ -31,6 +34,22 @@ run_action() {
         upgrade-erase)    dnf upgrade --refresh --best --allowerasing -y </dev/null ;;
         offline-download) dnf offline download --refresh -y </dev/null ;;
         offline-reboot)   dnf offline reboot -y </dev/null ;;
+        firmware)
+            fwupdmgr refresh --force </dev/null || true
+            # exit code 2 means "nothing to do"
+            fwupdmgr update -y --no-reboot-check --no-unreported-check </dev/null
+            local fw=$?
+            [ "$fw" -eq 2 ] && fw=0
+            return "$fw"
+            ;;
+        snap)             snap refresh </dev/null ;;
+        sysup-download:*)
+            ver="${1#*:}"
+            case "$ver" in
+                ''|*[!0-9]*) echo "bad release: $ver" >&2; return 2 ;;
+            esac
+            dnf system-upgrade download --releasever="$ver" -y </dev/null
+            ;;
         *)                echo "unknown action: $1" >&2; return 2 ;;
     esac
 }

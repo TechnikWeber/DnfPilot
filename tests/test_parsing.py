@@ -92,6 +92,11 @@ class Progress(unittest.TestCase):
 
 
 class Restart(unittest.TestCase):
+    def test_parse_rpm_last_kernel(self):
+        # newest_kernel() reads `rpm -q --last kernel-core`; the format is checked here
+        line = "kernel-core-7.3.3-200.fc44.x86_64          Mi 11 Nov 2026 09:12:01 CET"
+        self.assertEqual(line.split()[0].removeprefix("kernel-core-"), "7.3.3-200.fc44.x86_64")
+
     def test_only_packages_newer_than_boot(self):
         out = (
             "1790838999 glibc\n"
@@ -103,13 +108,72 @@ class Restart(unittest.TestCase):
         self.assertEqual(backend.parse_restart_reasons(out, 1794391255), ["kernel-core"])
 
 
+class Firmware(unittest.TestCase):
+    def test_fwupd_json(self):
+        text = """{
+          "Devices": [
+            {"Name": "System Firmware", "Vendor": "LENOVO", "Version": "0.1.15",
+             "Releases": [{"Version": "0.1.17", "Summary": "UEFI"}, {"Version": "0.1.16"}]},
+            {"Name": "SSD", "Vendor": "Samsung", "Releases": []}
+          ]
+        }"""
+        pkgs = backend.parse_fwupd_updates(text)
+        self.assertEqual([(p.name, p.version, p.source, p.kind) for p in pkgs],
+                         [("System Firmware", "0.1.17", "LENOVO", "firmware"), ("SSD", "", "Samsung", "firmware")])
+
+    def test_fwupd_empty_or_garbage(self):
+        self.assertEqual(backend.parse_fwupd_updates('{"Devices": []}'), [])
+        self.assertEqual(backend.parse_fwupd_updates("No updatable devices"), [])
+
+
+class Snap(unittest.TestCase):
+    def test_refresh_list(self):
+        text = ("Name     Version   Rev   Size   Publisher   Notes\n"
+                "firefox  145.0-1   7310  280MB  mozilla✓    -\n"
+                "core22   20261101  2100  77MB   canonical✓  base\n")
+        self.assertEqual([(p.name, p.version) for p in backend.parse_snap_refresh(text)],
+                         [("firefox", "145.0-1"), ("core22", "20261101")])
+
+    def test_up_to_date(self):
+        self.assertEqual(backend.parse_snap_refresh("All snaps up to date."), [])
+
+
+class Releases(unittest.TestCase):
+    def test_newest_final_release(self):
+        text = """[
+          {"version": "44", "arch": "x86_64", "variant": "KDE"},
+          {"version": "45", "arch": "x86_64", "variant": "Everything"},
+          {"version": "46 Beta", "arch": "x86_64", "variant": "Everything"}
+        ]"""
+        self.assertEqual(backend.parse_newest_release(text), 45)
+
+    def test_offline(self):
+        self.assertEqual(backend.parse_newest_release(""), 0)
+
+
 class Jobs(unittest.TestCase):
     def test_every_job_uses_known_actions(self):
         helper = backend.helper_script()
-        for key in ("update", "flatpak", "discover", "clean", "conflict", "pkcache", "offline", "offline-reboot"):
-            for step in backend.make_job(key).steps:
+        for key in ("update", "flatpak", "firmware", "discover", "clean", "conflict", "pkcache",
+                    "offline", "offline-reboot", "sysup"):
+            for step in backend.make_job(key, with_firmware=True, with_snap=True, release=45).steps:
                 if step.root:
-                    self.assertIn(f"{step.action})", helper, f"{key}: {step.action}")
+                    pattern = f"{step.base}:*)" if ":" in step.action else f"{step.action})"
+                    self.assertIn(pattern, helper, f"{key}: {step.action}")
+
+    def test_update_order(self):
+        steps = backend.make_job("update", with_firmware=True, with_snap=True).steps
+        self.assertEqual([s.action for s in steps], ["upgrade", "snap", "firmware", "flatpak"])
+
+    def test_sysup(self):
+        self.assertEqual([s.action for s in backend.make_job("sysup", release=45).steps],
+                         ["upgrade", "sysup-download:45"])
+
+    def test_download_only_progress_reaches_one_before_install(self):
+        prog = backend.DnfProgress(dl_split=1.0)
+        prog.feed("[ 1/2] a-1.0 100% | 1 MiB/s | 1 MiB | 00m01s")
+        prog.feed("[ 2/2] b-1.0 100% | 1 MiB/s | 1 MiB | 00m01s")
+        self.assertEqual(prog.fraction, 1.0)
 
     def test_without_flatpak(self):
         self.assertEqual([s.action for s in backend.make_job("update", with_flatpak=False).steps], ["upgrade"])

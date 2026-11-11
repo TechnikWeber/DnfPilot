@@ -1,7 +1,7 @@
 """The main window: update list, progress bar, fold-out details, buttons."""
 from __future__ import annotations
 
-from PySide6.QtCore import QObject, QProcess, QProcessEnvironment, QSettings, Qt, Signal
+from PySide6.QtCore import QObject, QProcess, QProcessEnvironment, QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QFontDatabase, QIcon
 from PySide6.QtWidgets import (
     QCheckBox, QFrame, QHBoxLayout, QHeaderView, QLabel, QMenu, QMessageBox,
@@ -23,8 +23,17 @@ STEP_TITLES = {
     "offline-download": "Downloading updates for the next restart",
     "offline-reboot": "Restarting to install updates",
     "flatpak": "Updating Flatpak apps",
+    "firmware": "Updating firmware",
+    "snap": "Updating Snap apps",
+    "sysup-download": "Downloading the new Fedora version",
 }
-DNF_STEPS = {"upgrade", "upgrade-erase", "offline-download"}
+DNF_STEPS = {"upgrade", "upgrade-erase", "offline-download", "sysup-download"}
+DOWNLOAD_ONLY = {"offline-download", "sysup-download"}
+SOURCE_LABEL = {"flatpak": "Flatpak", "firmware": "Firmware", "snap": "Snap"}
+
+
+def base(action: str) -> str:
+    return action.split(":", 1)[0]
 
 
 class Runner(QObject):
@@ -107,6 +116,8 @@ class Fold(QWidget):
     def _toggle(self, on: bool):
         self.btn.setArrowType(Qt.DownArrow if on else Qt.RightArrow)
         self.body.setVisible(on)
+        # closed: only as tall as the header, so it leaves no empty gap behind
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred if on else QSizePolicy.Maximum)
 
     def set_title(self, title: str):
         self.btn.setText(title)
@@ -129,6 +140,11 @@ class MainWindow(QWidget):
         self.updates: list[Package] = []
         self.reboot_needed = False
         self.reboot_reasons: list[str] = []
+        self.current = backend.current_release()
+        self.newest = 0
+        self.nvidia_pending = False
+        self.guard_timer = QTimer(self, interval=15000)
+        self.guard_timer.timeout.connect(self._update_guard)
         self._build()
         self.check()
 
@@ -152,20 +168,14 @@ class MainWindow(QWidget):
         head.addLayout(text, 1)
 
         # warning when Discover left an offline update behind
-        self.banner = QFrame()
-        self.banner.setObjectName("banner")
-        self.banner.setStyleSheet(
-            "#banner { background: rgba(246, 116, 0, 0.15); border: 1px solid rgba(246, 116, 0, 0.6); border-radius: 6px; }"
-        )
-        bl = QHBoxLayout(self.banner)
-        msg = QLabel(tr("Discover has scheduled an offline update. If it keeps failing, cancel it and update here instead."))
-        msg.setWordWrap(True)
-        fix = QPushButton(tr("Cancel it and update"))
-        fix.clicked.connect(lambda: self.start_job("discover"))
-        bl.addWidget(msg, 1)
-        bl.addWidget(fix)
-        self.banner_btn = fix
+        self.banner, _, self.banner_btn = self._banner(
+            "rgba(246, 116, 0", tr("Discover has scheduled an offline update. If it keeps failing, cancel it and update here instead."),
+            tr("Cancel it and update"), lambda: self.start_job("discover"))
         self.banner.setVisible(backend.offline_update_pending())
+        # a new Fedora release (Discover does not report it with the dnf5 backend)
+        self.up_banner, self.up_label, self.up_btn = self._banner(
+            "rgba(61, 174, 233", "", tr("Upgrade…"), lambda: self.start_job("sysup"))
+        self.up_banner.setVisible(False)
 
         # update list
         self.tree = QTreeWidget()
@@ -180,8 +190,17 @@ class MainWindow(QWidget):
         self.with_flatpak = QCheckBox(tr("Include Flatpak apps"))
         self.with_flatpak.setChecked(self.settings.value("flatpak", True, type=bool))
         self.with_flatpak.setEnabled(backend.have("flatpak"))
-        self.with_flatpak.toggled.connect(self._flatpak_toggled)
-        self.list_fold = Fold(tr("Available updates ({n})", n=0), self.tree, True, self.with_flatpak)
+        self.with_flatpak.toggled.connect(lambda on: self._option_toggled("flatpak", on))
+        self.with_firmware = QCheckBox(tr("Include firmware"))
+        self.with_firmware.setChecked(self.settings.value("firmware", True, type=bool))
+        self.with_firmware.setVisible(backend.have("fwupdmgr"))
+        self.with_firmware.toggled.connect(lambda on: self._option_toggled("firmware", on))
+        opts = QWidget()
+        ol = QHBoxLayout(opts)
+        ol.setContentsMargins(0, 0, 0, 0)
+        ol.addWidget(self.with_flatpak)
+        ol.addWidget(self.with_firmware)
+        self.list_fold = Fold(tr("Available updates ({n})", n=0), self.tree, True, opts)
 
         # progress
         self.bar = QProgressBar()
@@ -213,6 +232,7 @@ class MainWindow(QWidget):
             ("pkcache", "Clear the Discover/PackageKit cache"),
             (None, None),
             ("flatpak", "Update Flatpak apps only"),
+            ("firmware", "Update firmware only"),
             ("offline", "Download now, install on next restart"),
         ):
             if key is None:
@@ -242,11 +262,26 @@ class MainWindow(QWidget):
         if not backend.have("pkexec"):
             lay.addWidget(self._note(tr("pkexec is missing (package polkit), so the system cannot be updated from here.")))
         lay.addWidget(self.banner)
+        lay.addWidget(self.up_banner)
         lay.addWidget(self.list_fold, 3)
         lay.addWidget(self.bar)
         lay.addWidget(self.step)
         lay.addWidget(self.log_fold, 2)
         lay.addLayout(foot)
+
+    @staticmethod
+    def _banner(rgb: str, text: str, button: str, slot):
+        frame = QFrame()
+        frame.setObjectName("banner")
+        frame.setStyleSheet(f"#banner {{ background: {rgb}, 0.15); border: 1px solid {rgb}, 0.6); border-radius: 6px; }}")
+        lay = QHBoxLayout(frame)
+        label = QLabel(text)
+        label.setWordWrap(True)
+        btn = QPushButton(button)
+        btn.clicked.connect(slot)
+        lay.addWidget(label, 1)
+        lay.addWidget(btn)
+        return frame, label, btn
 
     @staticmethod
     def _note(text: str) -> QLabel:
@@ -257,10 +292,12 @@ class MainWindow(QWidget):
 
     # ------------------------------------------------------------ helpers
     def _busy(self, busy: bool):
-        for w in (self.btn_check, self.btn_repair, self.btn_reboot, self.btn_update, self.banner_btn, self.with_flatpak):
+        for w in (self.btn_check, self.btn_repair, self.btn_reboot, self.btn_update, self.banner_btn,
+                  self.up_btn, self.with_flatpak, self.with_firmware):
             w.setEnabled(not busy)
         if not busy:
             self.with_flatpak.setEnabled(backend.have("flatpak"))
+            self._update_guard()
 
     def _log(self, text: str):
         self.log.appendPlainText(text)
@@ -289,9 +326,24 @@ class MainWindow(QWidget):
             self.bar.setRange(0, 1000)
             self.bar.setValue(int(max(0.0, min(1.0, fraction)) * 1000))
 
-    def _flatpak_toggled(self, on: bool):
-        self.settings.setValue("flatpak", on)
+    def _option_toggled(self, key: str, on: bool):
+        self.settings.setValue(key, on)
         self.check()
+
+    # ------------------------------------------------------------ NVIDIA guard
+    def _update_guard(self):
+        """Lock the restart button while akmods builds the NVIDIA module."""
+        self.nvidia_pending = backend.nvidia_module_pending()
+        if self.nvidia_pending:
+            self.btn_reboot.setEnabled(False)
+            self.btn_reboot.setToolTip(tr("The NVIDIA driver is still being built for the new kernel. Restarting now would end with a black screen."))
+            if not self.guard_timer.isActive():
+                self.guard_timer.start()
+        else:
+            self.guard_timer.stop()
+            self.btn_reboot.setToolTip("")
+            if not self.in_job and not self.runner:
+                self.btn_reboot.setEnabled(True)
 
     # ------------------------------------------------------------ check
     def check(self):
@@ -305,46 +357,73 @@ class MainWindow(QWidget):
         self.updates = []
         self._check_failed = False
 
-        def after_flatpak(code, out):
-            if code == 0:
-                self.updates += backend.parse_flatpak_updates(out)
-            self.reboot_reasons = backend.restart_reasons()
-            self.reboot_needed = bool(self.reboot_reasons)
-            self._show_updates()
-
-        def after_dnf(code, out):
+        def dnf_done(code, out):
             # check-upgrade: 100 = updates available, 0 = none
             if code in (0, 100):
                 self.updates += backend.parse_check_upgrade(out)
             else:
                 self._check_failed = True
-            if self.with_flatpak.isChecked() and backend.have("flatpak"):
-                self._run(backend.CHECK_FLATPAK, None, after_flatpak)
-            else:
-                after_flatpak(1, "")
 
+        def parsed(parser):
+            def done(code, out):
+                if code == 0:
+                    self.updates += parser(out)
+            return done
+
+        def releases_done(code, out):
+            self.newest = backend.parse_newest_release(out) if code == 0 else 0
+
+        # each check is optional: missing tools are skipped silently
+        queue = []
         if backend.have("dnf"):
-            self._run(backend.CHECK_DNF, None, after_dnf)
+            queue.append((backend.CHECK_DNF, dnf_done))
         else:
-            after_dnf(1, "")
+            self._check_failed = True
+        if backend.have("snap"):
+            queue.append((backend.CHECK_SNAP, parsed(backend.parse_snap_refresh)))
+        if self.with_flatpak.isChecked() and backend.have("flatpak"):
+            queue.append((backend.CHECK_FLATPAK, parsed(backend.parse_flatpak_updates)))
+        if self.with_firmware.isChecked() and backend.have("fwupdmgr"):
+            # exit code 2 = no updates; the JSON is printed either way
+            queue.append((backend.CHECK_FWUPD, lambda c, o: parsed(backend.parse_fwupd_updates)(0, o)))
+        if backend.have("curl") and self.current:
+            queue.append((backend.CHECK_RELEASES, releases_done))
+
+        def next_check(_code=None, _out=None):
+            if queue:
+                cmd, handler = queue.pop(0)
+
+                def done(code, out):
+                    handler(code, out)
+                    next_check()
+                self._run(cmd, None, done)
+                return
+            self.reboot_reasons = backend.restart_reasons()
+            self.reboot_needed = bool(self.reboot_reasons)
+            self._show_updates()
+
+        next_check()
 
     def _show_updates(self):
         self.tree.clear()
         for p in self.updates:
-            QTreeWidgetItem(self.tree, [p.name, p.version, "Flatpak" if p.kind == "flatpak" else p.source])
+            QTreeWidgetItem(self.tree, [p.name, p.version, SOURCE_LABEL.get(p.kind, p.source)])
         rpm = sum(p.kind == "rpm" for p in self.updates)
-        fp = sum(p.kind == "flatpak" for p in self.updates)
+        fp = sum(p.kind in ("flatpak", "snap") for p in self.updates)
+        fw = sum(p.kind == "firmware" for p in self.updates)
         self.list_fold.set_title(tr("Available updates ({n})", n=len(self.updates)))
         parts = []
         if rpm:
             parts.append(tr("1 system update") if rpm == 1 else tr("{n} system updates", n=rpm))
         if fp:
             parts.append(tr("1 app update") if fp == 1 else tr("{n} app updates", n=fp))
+        if fw:
+            parts.append(tr("1 firmware update") if fw == 1 else tr("{n} firmware updates", n=fw))
         if self._check_failed:
             text = tr("Could not check for updates – see details.")
             self.log_fold.set_open(True)
-        elif len(parts) == 2:
-            text = tr("{a} and {b} available.", a=parts[0], b=parts[1])
+        elif len(parts) >= 2:
+            text = tr("{a} and {b} available.", a=", ".join(parts[:-1]), b=parts[-1])
         elif parts:
             text = tr("{a} available.", a=parts[0])
         else:
@@ -352,6 +431,11 @@ class MainWindow(QWidget):
         if self.reboot_needed:
             text += " " + tr("Restart recommended.") + " (" + ", ".join(self.reboot_reasons[:4]) + ")"
         self.status.setText(text)
+        if self.newest > self.current > 0:
+            self.up_label.setText(tr("Fedora {new} is available – you are on Fedora {cur}. Discover does not show this on Fedora with dnf5.",
+                                     new=self.newest, cur=self.current))
+            self.up_btn.setText(tr("Upgrade to Fedora {new}…", new=self.newest))
+        self.up_banner.setVisible(self.newest > self.current > 0)
         self.step.setText(tr("Ready."))
         self._set_progress(0)
         self._busy(False)
@@ -365,14 +449,36 @@ class MainWindow(QWidget):
     def start_job(self, key: str):
         if self.runner:
             return
-        job = backend.make_job(key, with_flatpak=self.with_flatpak.isChecked() and backend.have("flatpak"))
         if key == "flatpak" and not backend.have("flatpak"):
             return
+        if key == "sysup" and not self._confirm_sysup():
+            return
+        job = backend.make_job(
+            key,
+            with_flatpak=self.with_flatpak.isChecked() and backend.have("flatpak"),
+            with_firmware=self.with_firmware.isChecked() and any(p.kind == "firmware" for p in self.updates),
+            with_snap=any(p.kind == "snap" for p in self.updates),
+            release=self.newest,
+        )
         self._busy(True)
         if job.preview_erase:
             self._preview_erase(job)
         else:
             self._run_job(job)
+
+    def _confirm_sysup(self) -> bool:
+        box = QMessageBox(QMessageBox.Question, tr("Upgrade to Fedora {new}", new=self.newest), tr(
+            "How it works:\n\n"
+            "1. Fedora {cur} is brought fully up to date.\n"
+            "2. All packages of Fedora {new} are downloaded while you keep working.\n"
+            "3. After a restart they are installed. That takes 20–60 minutes; do not switch the computer off.\n\n"
+            "Before you start: back up important files, plug in the power cable. Third-party repositories "
+            "(VS Code, Docker, Unity …) sometimes lag behind a new release and can block the download – "
+            "the details then say which one.", new=self.newest, cur=self.current), parent=self)
+        go = box.addButton(tr("Download Fedora {new}", new=self.newest), QMessageBox.AcceptRole)
+        box.addButton(tr("Cancel"), QMessageBox.RejectRole)
+        box.exec()
+        return box.clickedButton() is go
 
     def _preview_erase(self, job: Job):
         self.step.setText(tr("Checking for changes…"))
@@ -418,7 +524,7 @@ class MainWindow(QWidget):
     def _current(self, action: str, sub: str = "", fraction: float = 0.0):
         step = next(s for s in self.job.steps if s.action == action)
         i = self.job.steps.index(step) + 1
-        what = tr(STEP_TITLES[action])
+        what = tr(STEP_TITLES[base(action)])
         if sub:
             what += " – " + sub
         self.step.setText(tr("Step {i} of {n}: {what}", i=i, n=len(self.job.steps), what=what))
@@ -435,14 +541,14 @@ class MainWindow(QWidget):
                 parts = ln.split()
                 if parts[1] == "step":
                     state["action"] = parts[2]
-                    state["dnf"] = DnfProgress()
-                    self._current(parts[2], tr("Loading repositories") if parts[2] in DNF_STEPS else "")
+                    state["dnf"] = DnfProgress(dl_split=1.0 if base(parts[2]) in DOWNLOAD_ONLY else 0.4)
+                    self._current(parts[2], tr("Loading repositories") if base(parts[2]) in DNF_STEPS else "")
                 elif parts[1] == "done":
                     self.done_weight += next(s.weight for s in self.job.steps if s.action == parts[2])
                     self._set_progress(self.done_weight / self.total_weight)
                 return
             act = state["action"]
-            if act in DNF_STEPS:
+            if act and base(act) in DNF_STEPS:
                 prog: DnfProgress = state["dnf"]
                 if prog.feed(ln):
                     self._current(act, self._dnf_label(prog), prog.fraction)
@@ -500,11 +606,11 @@ class MainWindow(QWidget):
         self._run(backend.FLATPAK_UPDATE, on_line, done)
 
     def _failed(self, action: str, code: int):
-        what = tr(STEP_TITLES.get(action, "upgrade"))
+        what = tr(STEP_TITLES.get(base(action), "Updating system packages"))
         self.log_fold.set_open(True)
         self._finish_idle(tr("Failed: {what} (exit code {rc}).", what=what, rc=code))
         QMessageBox.critical(self, tr("Something went wrong."), tr(
-            "{what} failed. The details below show dnf's own message.\n\nOften this helps: Repair → “Reload package lists, then update”. For conflicts between packages: Repair → “Resolve package conflicts”.",
+            "{what} failed. The details below show the original message.\n\nOften this helps: Repair → “Reload package lists, then update”. For conflicts between packages: Repair → “Resolve package conflicts”.",
             what=what))
 
     def _finish_idle(self, text: str):
@@ -530,14 +636,33 @@ class MainWindow(QWidget):
             QMessageBox.information(self, tr("DnfPilot"), tr("The Discover/PackageKit cache is empty."))
         elif key == "flatpak":
             QMessageBox.information(self, tr("DnfPilot"), tr("Flatpak apps are up to date."))
+        elif key == "sysup":
+            box = QMessageBox(QMessageBox.Question, tr("DnfPilot"), tr(
+                "Fedora {new} is downloaded. Restart now to install it? The installation takes 20–60 minutes – do not switch the computer off.",
+                new=self.newest), parent=self)
+            go = box.addButton(tr("Restart and install"), QMessageBox.AcceptRole)
+            box.addButton(tr("Later"), QMessageBox.RejectRole)
+            box.exec()
+            if box.clickedButton() is go:
+                self._run_job(backend.make_job("offline-reboot"))
+                return
+            QMessageBox.information(self, tr("DnfPilot"), tr(
+                "The download stays ready. To install it later, run this in a terminal and restart:\n\nsudo dnf offline reboot"))
 
         if self.job.reboot_after:
-            self.reboot_needed = bool(backend.restart_reasons())
+            firmware = any(s.base == "firmware" for s in self.job.steps)
+            self.reboot_needed = bool(backend.restart_reasons()) or firmware
             self._offer_reboot()
         else:
             self._refresh_after()
 
     def _offer_reboot(self):
+        self._update_guard()
+        if self.nvidia_pending:
+            QMessageBox.information(self, tr("DnfPilot"), tr(
+                "Updates are installed. The NVIDIA driver is still being built for the new kernel – the Restart button unlocks as soon as it is ready (usually within 5 minutes)."))
+            self._refresh_after()
+            return
         text = tr("Updates are installed. Kernel, Plasma, systemd or similar were updated – a restart is recommended.") \
             if self.reboot_needed else tr("Updates are installed. A restart is not strictly needed.")
         box = QMessageBox(QMessageBox.Question if self.reboot_needed else QMessageBox.Information,
@@ -558,6 +683,9 @@ class MainWindow(QWidget):
 
     # ------------------------------------------------------------ restart
     def ask_reboot(self):
+        self._update_guard()
+        if self.nvidia_pending:
+            return
         box = QMessageBox(QMessageBox.Question, tr("Restart"),
                           tr("Restart the computer now? Save your open work first."), parent=self)
         go = box.addButton(tr("Restart now"), QMessageBox.AcceptRole)

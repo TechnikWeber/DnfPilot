@@ -91,6 +91,32 @@ DE = {
         "Das sieht nicht nach Fedora aus. dnfpilot kennt nur dnf und Flatpak, die meisten Knöpfe funktionieren hier nicht.",
     "pkexec is missing (package polkit), so the system cannot be updated from here.":
         "pkexec fehlt (Paket polkit), daher kann das System hier nicht aktualisiert werden.",
+    # 0.2.0
+    "Include firmware": "Firmware einbeziehen",
+    "Update firmware only": "Nur Firmware aktualisieren",
+    "Updating firmware": "Firmware wird aktualisiert",
+    "Updating Snap apps": "Snap-Apps werden aktualisiert",
+    "Downloading the new Fedora version": "Neue Fedora-Version wird heruntergeladen",
+    "1 firmware update": "1 Firmware-Update",
+    "{n} firmware updates": "{n} Firmware-Updates",
+    "Upgrade…": "Upgrade …",
+    "Fedora {new} is available – you are on Fedora {cur}. Discover does not show this on Fedora with dnf5.":
+        "Fedora {new} ist verfügbar – du nutzt Fedora {cur}. Discover zeigt das unter Fedora mit dnf5 nicht an.",
+    "Upgrade to Fedora {new}…": "Auf Fedora {new} upgraden …",
+    "Upgrade to Fedora {new}": "Upgrade auf Fedora {new}",
+    "How it works:\n\n1. Fedora {cur} is brought fully up to date.\n2. All packages of Fedora {new} are downloaded while you keep working.\n3. After a restart they are installed. That takes 20–60 minutes; do not switch the computer off.\n\nBefore you start: back up important files, plug in the power cable. Third-party repositories (VS Code, Docker, Unity …) sometimes lag behind a new release and can block the download – the details then say which one.":
+        "So läuft es ab:\n\n1. Fedora {cur} wird vollständig aktualisiert.\n2. Alle Pakete von Fedora {new} werden heruntergeladen, während du weiterarbeitest.\n3. Nach einem Neustart werden sie installiert. Das dauert 20–60 Minuten; den Computer dabei nicht ausschalten.\n\nVorher: wichtige Dateien sichern, Netzteil anschließen. Fremde Paketquellen (VS Code, Docker, Unity …) hinken einer neuen Version manchmal hinterher und können den Download blockieren – die Details nennen dann die Quelle.",
+    "Download Fedora {new}": "Fedora {new} herunterladen",
+    "Fedora {new} is downloaded. Restart now to install it? The installation takes 20–60 minutes – do not switch the computer off.":
+        "Fedora {new} ist heruntergeladen. Jetzt neu starten und installieren? Die Installation dauert 20–60 Minuten – den Computer dabei nicht ausschalten.",
+    "The download stays ready. To install it later, run this in a terminal and restart:\n\nsudo dnf offline reboot":
+        "Der Download bleibt bereit. Zum späteren Installieren im Terminal eingeben (startet neu):\n\nsudo dnf offline reboot",
+    "The NVIDIA driver is still being built for the new kernel. Restarting now would end with a black screen.":
+        "Der NVIDIA-Treiber wird noch für den neuen Kernel gebaut. Ein Neustart jetzt endet mit schwarzem Bildschirm.",
+    "Updates are installed. The NVIDIA driver is still being built for the new kernel – the Restart button unlocks as soon as it is ready (usually within 5 minutes).":
+        "Die Updates sind installiert. Der NVIDIA-Treiber wird noch für den neuen Kernel gebaut – der Neustart-Knopf wird frei, sobald er fertig ist (meist innerhalb von 5 Minuten).",
+    "{what} failed. The details below show the original message.\n\nOften this helps: Repair → “Reload package lists, then update”. For conflicts between packages: Repair → “Resolve package conflicts”.":
+        "{what} ist fehlgeschlagen. Die Details unten zeigen die Originalmeldung.\n\nOft hilft: Reparieren → „Paketlisten neu laden, dann aktualisieren“. Bei Konflikten zwischen Paketen: Reparieren → „Paketkonflikte lösen“.",
 }
 
 

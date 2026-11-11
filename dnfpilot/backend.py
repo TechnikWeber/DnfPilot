@@ -5,6 +5,7 @@ dnf5 output (see tests/).
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -74,6 +75,58 @@ def parse_flatpak_updates(text: str) -> list[Package]:
     return pkgs
 
 
+# ---------------------------------------------------------------- firmware
+
+def parse_fwupd_updates(text: str) -> list[Package]:
+    """Parse `fwupdmgr get-updates --json`: one entry per device with a newer release."""
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return []
+    pkgs = []
+    for dev in data.get("Devices", []):
+        releases = dev.get("Releases") or []
+        version = releases[0].get("Version", "") if releases else ""
+        pkgs.append(Package(dev.get("Name", "?"), version, dev.get("Vendor", "fwupd"), "firmware"))
+    return pkgs
+
+
+# ---------------------------------------------------------------- snap
+
+def parse_snap_refresh(text: str) -> list[Package]:
+    """Parse `snap refresh --list` (a table with a Name/Version header)."""
+    pkgs = []
+    lines = text.splitlines()
+    if not lines or not lines[0].startswith("Name"):
+        return pkgs
+    for line in lines[1:]:
+        cols = line.split()
+        if len(cols) >= 2:
+            pkgs.append(Package(cols[0], cols[1], "Snap", "snap"))
+    return pkgs
+
+
+# ---------------------------------------------------------------- new Fedora
+
+def parse_newest_release(text: str) -> int:
+    """Highest final release in fedoraproject.org/releases.json (betas are "45 Beta")."""
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return 0
+    versions = [int(r["version"]) for r in data if str(r.get("version", "")).isdigit()]
+    return max(versions, default=0)
+
+
+def current_release() -> int:
+    try:
+        text = Path("/etc/os-release").read_text()
+    except OSError:
+        return 0
+    m = re.search(r"^VERSION_ID=\"?(\d+)", text, re.M)
+    return int(m.group(1)) if m else 0
+
+
 # ---------------------------------------------------------------- previews
 
 _SECTION = re.compile(r"^([A-Z][A-Za-z ]+):$")
@@ -123,7 +176,7 @@ class DnfProgress:
     phase: str = "refresh"  # refresh -> download -> install -> done
     fraction: float = 0.0
     label: str = ""
-    _dl_split: float = 0.4
+    dl_split: float = 0.4  # 1.0 for download-only runs (offline, system-upgrade)
 
     def feed(self, line: str) -> bool:
         """Feed one line; return True when fraction or label changed."""
@@ -139,7 +192,7 @@ class DnfProgress:
             return False
         n, total, what = int(m.group(1)), max(int(m.group(2)), 1), m.group(3).strip()
         if what == "Total":
-            self.phase, self.fraction = "install", self._dl_split
+            self.phase, self.fraction = "install", self.dl_split
             self.label = "download-done"
             return True
         if self.phase in ("refresh", "resolve"):
@@ -147,10 +200,10 @@ class DnfProgress:
             # went straight to "Verify package files"
             self.phase = "install" if what.startswith("Verify") else "download"
         if self.phase == "download":
-            self.fraction = self._dl_split * n / total
+            self.fraction = self.dl_split * n / total
             self.label = f"download {n}/{total}"
         else:
-            self.fraction = self._dl_split + (1 - self._dl_split) * n / total
+            self.fraction = self.dl_split + (1 - self.dl_split) * n / total
             self.label = f"install {n}/{total} {what}"
         return True
 
@@ -177,13 +230,20 @@ class FlatpakProgress:
 
 @dataclass
 class Step:
-    """One unit of work. Root steps are bundled into a single pkexec call."""
+    """One unit of work. Root steps are bundled into a single pkexec call.
+
+    An action can carry an argument after a colon: "sysup-download:45".
+    """
     action: str  # helper action, or "flatpak"
     weight: float = 1.0
 
     @property
     def root(self) -> bool:
         return self.action != "flatpak"
+
+    @property
+    def base(self) -> str:
+        return self.action.split(":", 1)[0]
 
 
 @dataclass
@@ -194,20 +254,24 @@ class Job:
     preview_erase: bool = False  # show what would be removed first
 
 
-def make_job(key: str, with_flatpak: bool = True) -> Job:
-    fp = [Step("flatpak", 2)] if with_flatpak else []
+def make_job(key: str, with_flatpak: bool = True, with_firmware: bool = False,
+             with_snap: bool = False, release: int = 0) -> Job:
     up = Step("upgrade", 8)
+    extra = ([Step("snap", 1)] if with_snap else []) + ([Step("firmware", 2)] if with_firmware else [])
+    fp = [Step("flatpak", 2)] if with_flatpak else []
     jobs = {
-        "update": Job("update", [up, *fp]),
-        "flatpak": Job("flatpak", [Step("flatpak", 1)], reboot_after=False),
-        "discover": Job("discover", [Step("cancel-offline", 0.3), Step("clean", 0.3), up, *fp]),
-        "clean": Job("clean", [Step("clean", 0.3), up, *fp]),
-        "conflict": Job("conflict", [Step("clean", 0.3), Step("upgrade-erase", 8)], preview_erase=True),
-        "pkcache": Job("pkcache", [Step("pkcache", 1)], reboot_after=False),
-        "offline": Job("offline", [Step("offline-download", 8)], reboot_after=False),
-        "offline-reboot": Job("offline-reboot", [Step("offline-reboot", 1)], reboot_after=False),
+        "update": lambda: Job("update", [up, *extra, *fp]),
+        "flatpak": lambda: Job("flatpak", [Step("flatpak", 1)], reboot_after=False),
+        "firmware": lambda: Job("firmware", [Step("firmware", 1)]),
+        "discover": lambda: Job("discover", [Step("cancel-offline", 0.3), Step("clean", 0.3), up, *fp]),
+        "clean": lambda: Job("clean", [Step("clean", 0.3), up, *fp]),
+        "conflict": lambda: Job("conflict", [Step("clean", 0.3), Step("upgrade-erase", 8)], preview_erase=True),
+        "pkcache": lambda: Job("pkcache", [Step("pkcache", 1)], reboot_after=False),
+        "offline": lambda: Job("offline", [Step("offline-download", 8)], reboot_after=False),
+        "offline-reboot": lambda: Job("offline-reboot", [Step("offline-reboot", 1)], reboot_after=False),
+        "sysup": lambda: Job("sysup", [Step("upgrade", 4), Step(f"sysup-download:{int(release)}", 8)], reboot_after=False),
     }
-    return jobs[key]
+    return jobs[key]()
 
 
 # ---------------------------------------------------------------- commands
@@ -230,6 +294,10 @@ CHECK_DNF = ("dnf", ["check-upgrade", "--refresh", "--assumeno"])
 CHECK_FLATPAK = ("flatpak", ["remote-ls", "--updates", "--columns=application,name,version,branch"])
 PREVIEW_ERASE = ("dnf", ["upgrade", "--refresh", "--best", "--allowerasing", "--assumeno"])
 FLATPAK_UPDATE = ("flatpak", ["update", "-y", "--noninteractive"])
+CHECK_FWUPD = ("fwupdmgr", ["get-updates", "--json", "--no-unreported-check"])
+CHECK_SNAP = ("snap", ["refresh", "--list"])
+RELEASES_URL = "https://fedoraproject.org/releases.json"
+CHECK_RELEASES = ("curl", ["-fsSL", "--max-time", "15", RELEASES_URL])
 REBOOT = ("systemctl", ["reboot"])
 
 
@@ -277,6 +345,47 @@ def restart_reasons() -> list[str]:
         return parse_restart_reasons(out, boot_time())
     except (OSError, subprocess.SubprocessError):
         return []
+
+
+def newest_kernel() -> str:
+    """Release of the most recently installed kernel, e.g. "7.2.15-200.fc44.x86_64"."""
+    if not have("rpm"):
+        return ""
+    try:
+        out = subprocess.run(["rpm", "-q", "--last", "kernel-core"], capture_output=True,
+                             text=True, env=child_env(), timeout=20).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    first = out.split("\n", 1)[0].split()
+    return first[0].removeprefix("kernel-core-") if first and first[0].startswith("kernel-core-") else ""
+
+
+def nvidia_module_pending() -> bool:
+    """True while akmods is still building the NVIDIA module for the newest
+    kernel. Restarting then ends with a black screen."""
+    if not have("rpm"):
+        return False
+    try:
+        installed = subprocess.run(["rpm", "-qa", "akmod-nvidia*"], capture_output=True,
+                                   text=True, timeout=20).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return False
+    if not installed:
+        return False
+    try:
+        busy = subprocess.run(["pgrep", "-f", "akmods"], capture_output=True, timeout=5).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        busy = False
+    if busy:
+        return True
+    kver = newest_kernel()
+    if not kver or not have("modinfo"):
+        return False
+    try:
+        return subprocess.run(["modinfo", "-k", kver, "-F", "version", "nvidia"],
+                              capture_output=True, timeout=10).returncode != 0
+    except (OSError, subprocess.SubprocessError):
+        return False
 
 
 def have(program: str) -> bool:

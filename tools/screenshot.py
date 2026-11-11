@@ -28,7 +28,9 @@ win.updates += backend.parse_flatpak_updates(
     "org.fedoraproject.Platform\tFedora Platform\t44\tf44\n"
     "org.sane_project.xsane\tXSane\t0.999\tstable\n"
 )
+win.updates.append(backend.Package("System Firmware", "0.1.17", "LENOVO", "firmware"))
 win._check_failed = False
+win.current, win.newest = 44, 45
 win._show_updates()
 win._busy(True)
 win.job = backend.make_job("update")
