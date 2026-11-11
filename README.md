@@ -2,11 +2,21 @@
 
 <p>
   <img alt="Status: beta" src="https://img.shields.io/badge/status-beta-yellow">
-  <a href="https://github.com/TechnikWeber/DnfPilot/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/TechnikWeber/DnfPilot?include_prereleases"></a>
+  <a href="https://github.com/TechnikWeber/DnfPilot/releases/latest"><img alt="Download" src="https://img.shields.io/github/v/release/TechnikWeber/DnfPilot?include_prereleases&label=download&color=2ea44f"></a>
+  <a href="https://github.com/TechnikWeber/DnfPilot/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/TechnikWeber/DnfPilot/total?color=blue"></a>
+  <a href="https://github.com/TechnikWeber/DnfPilot/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/TechnikWeber/DnfPilot?style=flat&color=yellow"></a>
   <a href="https://github.com/TechnikWeber/DnfPilot/actions/workflows/ci.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/TechnikWeber/DnfPilot/ci.yml?branch=main&label=build"></a>
   <img alt="Platform: Fedora Linux" src="https://img.shields.io/badge/platform-Fedora%20Linux-blue">
   <img alt="UI: English | Deutsch" src="https://img.shields.io/badge/UI-English%20%7C%20Deutsch-informational">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green"></a>
+</p>
+
+<p>
+  <a href="https://github.com/TechnikWeber/DnfPilot/releases/latest"><b>Download</b></a> &nbsp;·&nbsp;
+  <a href="#download"><b>Install</b></a> &nbsp;·&nbsp;
+  <a href="https://technikweber.github.io/2026/fedora-einrichten-und-aktuell-halten/"><b>Blog post (German)</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/TechnikWeber/DnfSetup"><b>Set up a fresh install: DnfSetup</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/TechnikWeber/DnfPilot/releases"><b>Releases</b></a>
 </p>
 
 Update Fedora with `dnf upgrade --refresh` and `flatpak update` from a small
