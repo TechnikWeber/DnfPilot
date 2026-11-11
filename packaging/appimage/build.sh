@@ -66,11 +66,17 @@ EOF
 chmod +x AppDir/AppRun
 install -Dm644 "$root/share/dnfpilot.desktop" AppDir/dnfpilot.desktop
 install -Dm644 "$root/share/dnfpilot.desktop" AppDir/usr/share/applications/dnfpilot.desktop
-install -Dm644 "$root/dnfpilot/dnfpilot.svg" AppDir/dnfpilot.svg
+# file managers want a PNG for the AppImage's own icon
+install -Dm644 "$root/share/dnfpilot.png" AppDir/dnfpilot.png
+install -Dm644 "$root/share/dnfpilot.png" AppDir/usr/share/icons/hicolor/256x256/apps/dnfpilot.png
 install -Dm644 "$root/dnfpilot/dnfpilot.svg" AppDir/usr/share/icons/hicolor/scalable/apps/dnfpilot.svg
-ln -sf dnfpilot.svg AppDir/.DirIcon
+ln -sf dnfpilot.png AppDir/.DirIcon
 install -Dm644 "$root/share/io.github.technikweber.dnfpilot.metainfo.xml" \
     AppDir/usr/share/metainfo/io.github.technikweber.dnfpilot.appdata.xml
+
+# python-appimage extracts with 0700 directories; the AppImage must be
+# readable for every user
+chmod -R a+rX AppDir
 
 # ---- 5. pack --------------------------------------------------------------
 curl -fsSL -o appimagetool \
