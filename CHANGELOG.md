@@ -4,6 +4,9 @@
 
 - `dnfpilot-terminal` speaks English or German now, following the system
   locale like the main app (`DNFPILOT_LANG=en` or `=de` to override).
+- `dnfpilot-terminal` no longer calls `dnf needs-restarting`, which could hang;
+  like the main app it compares package install times with the boot time and
+  names the packages that need a restart.
 
 ## [0.3.0] - 2026-11-11
 

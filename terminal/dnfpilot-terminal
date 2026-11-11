@@ -103,21 +103,44 @@ dnf_clean() {
     sudo dnf clean all || fail "$(t "dnf clean all failed." "dnf clean all ist fehlgeschlagen.")"
 }
 
+# Packages whose update only takes effect after a restart (same list as
+# RESTART_PACKAGES in dnfpilot/backend.py).
+RESTART_PACKAGES=(
+    kernel kernel-core kernel-rt glibc linux-firmware systemd
+    dbus dbus-broker dbus-daemon microcode_ctl zlib zlib-ng-compat
+    plasma-workspace kwin kwin-wayland gnome-shell mutter
+    mesa-dri-drivers mesa-vulkan-drivers akmod-nvidia xorg-x11-drv-nvidia
+)
+
+# Prints the core packages installed since the last boot, one per line.
+# Compares rpm's INSTALLTIME with the boot time instead of calling
+# `dnf needs-restarting`, which as a normal user reloads every repository
+# first and can hang.
+restart_reasons() {
+    local btime
+    btime=$(awk '$1 == "btime" {print $2}' /proc/stat)
+    [ -n "$btime" ] || return 0
+    rpm -q --qf '%{INSTALLTIME} %{NAME}\n' "${RESTART_PACKAGES[@]}" 2>/dev/null |
+        awk -v boot="$btime" '$1 ~ /^[0-9]+$/ && $1 > boot && !seen[$2]++ {print $2}'
+}
+
 ask_reboot() {
     step "$(t "Checking whether a restart is needed …" "Prüfe, ob ein Neustart nötig ist …")"
-    if dnf needs-restarting -q >/dev/null 2>&1; then
-        text="$(t "Done! According to DNF a restart is not strictly needed.
+    local reasons
+    reasons=$(restart_reasons | paste -sd, - | sed 's/,/, /g')
+    if [ -z "$reasons" ]; then
+        text="$(t "Done! A restart is not strictly needed.
 
 Restart now anyway?" \
-"Fertig! Ein Neustart ist laut DNF nicht unbedingt nötig.
+"Fertig! Ein Neustart ist nicht unbedingt nötig.
 
 Trotzdem jetzt neu starten?")"
     else
-        text="$(t "Done! Kernel, Plasma, systemd or similar were updated –
+        text="$(t "Done! These were updated: $reasons –
 a restart is recommended.
 
 Restart now?" \
-"Fertig! Es wurden Kernel, Plasma, systemd o. Ä. aktualisiert –
+"Fertig! Aktualisiert wurden: $reasons –
 ein Neustart wird empfohlen.
 
 Jetzt neu starten?")"
