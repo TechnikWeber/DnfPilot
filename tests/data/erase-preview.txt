@@ -1,0 +1,20 @@
+Updating and loading repositories:
+Repositories loaded.
+Package                      Arch   Version                Repository      Size
+Upgrading:
+ mesa-dri-drivers            x86_64 0:26.2.1-1.fc44        updates     45.1 MiB
+   replacing mesa-dri-drivers x86_64 0:26.1.4-1.fc44       updates     44.9 MiB
+Removing:
+ old-plugin                  x86_64 0:1.0-3.fc43           @System    120.0 KiB
+Removing dependent packages:
+ old-plugin-extras           noarch 0:1.0-3.fc43           @System     12.0 KiB
+Downgrading:
+ libfoo                      x86_64 0:2.0-1.fc44           fedora      80.0 KiB
+   replacing libfoo           x86_64 0:2.1-1.fc44          @System     81.0 KiB
+
+Transaction Summary:
+ Upgrading:          1 package
+ Replacing:          2 packages
+ Removing:           2 packages
+ Downgrading:        1 package
+Operation aborted by the user.

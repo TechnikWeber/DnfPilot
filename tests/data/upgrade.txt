@@ -1,0 +1,399 @@
+Updating and loading repositories:
+ Fedora 44 - x86_64 - Updates           100% |   7.0 KiB/s |   5.8 KiB |  00m01s
+ Fedora 44 openh264 (From Cisco) - x86_ 100% |   1.2 KiB/s | 986.0   B |  00m01s
+ Fedora 44 - x86_64                     100% |  24.6 KiB/s |  20.2 KiB |  00m01s
+Repositories loaded.
+Package                                 Arch   Version                   Repository      Size
+Upgrading:
+ 7zip                                   x86_64 0:26.04-1.fc44            updates      3.3 MiB
+   replacing 7zip                       x86_64 0:25.01-5.fc44            fedora       3.3 MiB
+ curl                                   x86_64 0:8.18.0-14.fc44          updates    480.0 KiB
+   replacing curl                       x86_64 0:8.18.0-4.fc44           fedora     480.0 KiB
+ expat                                  x86_64 0:2.9.0-1.fc44            updates    349.6 KiB
+   replacing expat                      x86_64 0:2.7.3-2.fc44            fedora     316.8 KiB
+ git                                    x86_64 0:2.56.0-1.fc44           updates     57.7 KiB
+   replacing git                        x86_64 0:2.53.0-1.fc44           fedora      56.4 KiB
+ git-core                               x86_64 0:2.56.0-1.fc44           updates     27.7 MiB
+   replacing git-core                   x86_64 0:2.53.0-1.fc44           fedora      24.6 MiB
+ git-core-doc                           noarch 0:2.56.0-1.fc44           updates     19.1 MiB
+   replacing git-core-doc               noarch 0:2.53.0-1.fc44           fedora      18.6 MiB
+ less                                   x86_64 0:710-2.fc44              updates    488.6 KiB
+   replacing less                       x86_64 0:691-2.fc44              fedora     464.5 KiB
+ less-color                             x86_64 0:710-2.fc44              updates      2.4 KiB
+   replacing less-color                 x86_64 0:691-2.fc44              fedora      88.0 KiB
+ libblkid                               x86_64 0:2.41.6-1.fc44           updates    274.3 KiB
+   replacing libblkid                   x86_64 0:2.41.3-12.fc44          fedora     274.3 KiB
+ libcurl                                x86_64 0:8.18.0-14.fc44          updates      1.0 MiB
+   replacing libcurl                    x86_64 0:8.18.0-4.fc44           fedora       1.0 MiB
+ libedit                                x86_64 0:3.1-59.20260512cvs.fc44 updates    248.3 KiB
+   replacing libedit                    x86_64 0:3.1-58.20251016cvs.fc44 fedora     248.1 KiB
+ libfdisk                               x86_64 0:2.41.6-1.fc44           updates    388.3 KiB
+   replacing libfdisk                   x86_64 0:2.41.3-12.fc44          fedora     388.3 KiB
+ liblastlog2                            x86_64 0:2.41.6-1.fc44           updates     41.6 KiB
+   replacing liblastlog2                x86_64 0:2.41.3-12.fc44          fedora      37.6 KiB
+ libmount                               x86_64 0:2.41.6-1.fc44           updates    392.6 KiB
+   replacing libmount                   x86_64 0:2.41.3-12.fc44          fedora     388.6 KiB
+ libsmartcols                           x86_64 0:2.41.6-1.fc44           updates    188.3 KiB
+   replacing libsmartcols               x86_64 0:2.41.3-12.fc44          fedora     188.3 KiB
+ libsodium                              x86_64 0:1.0.22-1.fc44           updates    481.5 KiB
+   replacing libsodium                  x86_64 0:1.0.21-3.fc44           fedora     453.3 KiB
+ libuuid                                x86_64 0:2.41.6-1.fc44           updates     37.2 KiB
+   replacing libuuid                    x86_64 0:2.41.3-12.fc44          fedora      37.2 KiB
+ openssh                                x86_64 0:10.2p1-16.fc44          updates      1.4 MiB
+   replacing openssh                    x86_64 0:10.2p1-7.fc44           fedora       1.4 MiB
+ openssh-clients                        x86_64 0:10.2p1-16.fc44          updates      2.7 MiB
+   replacing openssh-clients            x86_64 0:10.2p1-7.fc44           fedora       2.7 MiB
+ openssl                                x86_64 1:3.5.9-1.fc44            updates      1.9 MiB
+   replacing openssl                    x86_64 1:3.5.5-1.fc44            fedora       1.8 MiB
+ openssl-libs                           x86_64 1:3.5.9-1.fc44            updates      9.2 MiB
+   replacing openssl-libs               x86_64 1:3.5.5-1.fc44            fedora       9.2 MiB
+ perl-AutoLoader                        noarch 0:5.74-525.fc44           updates     20.6 KiB
+   replacing perl-AutoLoader            noarch 0:5.74-523.fc44           fedora      20.6 KiB
+ perl-B                                 x86_64 0:1.89-525.fc44           updates    501.2 KiB
+   replacing perl-B                     x86_64 0:1.89-523.fc44           fedora     501.2 KiB
+ perl-Class-Struct                      noarch 0:0.68-525.fc44           updates     25.4 KiB
+   replacing perl-Class-Struct          noarch 0:0.68-523.fc44           fedora      25.4 KiB
+ perl-Data-Dumper                       x86_64 0:2.192-523.fc44          updates    115.5 KiB
+   replacing perl-Data-Dumper           x86_64 0:2.191-522.fc44          fedora     115.5 KiB
+ perl-DynaLoader                        x86_64 0:1.57-525.fc44           updates     32.1 KiB
+   replacing perl-DynaLoader            x86_64 0:1.57-523.fc44           fedora      32.1 KiB
+ perl-Errno                             x86_64 0:1.38-525.fc44           updates      8.4 KiB
+   replacing perl-Errno                 x86_64 0:1.38-523.fc44           fedora       8.4 KiB
+ perl-Fcntl                             x86_64 0:1.20-525.fc44           updates     48.7 KiB
+   replacing perl-Fcntl                 x86_64 0:1.20-523.fc44           fedora      48.7 KiB
+ perl-File-Basename                     noarch 0:2.86-525.fc44           updates     14.0 KiB
+   replacing perl-File-Basename         noarch 0:2.86-523.fc44           fedora      14.0 KiB
+ perl-File-stat                         noarch 0:1.14-525.fc44           updates     12.5 KiB
+   replacing perl-File-stat             noarch 0:1.14-523.fc44           fedora      12.5 KiB
+ perl-FileHandle                        noarch 0:2.05-525.fc44           updates      9.4 KiB
+   replacing perl-FileHandle            noarch 0:2.05-523.fc44           fedora       9.4 KiB
+ perl-Getopt-Std                        noarch 0:1.14-525.fc44           updates     11.2 KiB
+   replacing perl-Getopt-Std            noarch 0:1.14-523.fc44           fedora      11.2 KiB
+ perl-Git                               noarch 0:2.56.0-1.fc44           updates     64.4 KiB
+   replacing perl-Git                   noarch 0:2.53.0-1.fc44           fedora      64.4 KiB
+ perl-HTTP-Tiny                         noarch 0:0.096-1.fc44            updates    162.4 KiB
+   replacing perl-HTTP-Tiny             noarch 0:0.092-2.fc44            fedora     157.6 KiB
+ perl-IO                                x86_64 0:1.55-525.fc44           updates    147.3 KiB
+   replacing perl-IO                    x86_64 0:1.55-523.fc44           fedora     147.3 KiB
+ perl-IPC-Open3                         noarch 0:1.24-525.fc44           updates     27.7 KiB
+   replacing perl-IPC-Open3             noarch 0:1.24-523.fc44           fedora      27.7 KiB
+ perl-NDBM_File                         x86_64 0:1.18-525.fc44           updates     28.4 KiB
+   replacing perl-NDBM_File             x86_64 0:1.18-523.fc44           fedora      28.4 KiB
+ perl-POSIX                             x86_64 0:2.23-525.fc44           updates    229.4 KiB
+   replacing perl-POSIX                 x86_64 0:2.23-523.fc44           fedora     229.4 KiB
+ perl-SelectSaver                       noarch 0:1.02-525.fc44           updates      2.2 KiB
+   replacing perl-SelectSaver           noarch 0:1.02-523.fc44           fedora       2.2 KiB
+ perl-Socket                            x86_64 4:2.043-1.fc44            updates    121.8 KiB
+   replacing perl-Socket                x86_64 4:2.040-3.fc44            fedora     120.1 KiB
+ perl-Symbol                            noarch 0:1.09-525.fc44           updates      6.8 KiB
+   replacing perl-Symbol                noarch 0:1.09-523.fc44           fedora       6.8 KiB
+ perl-URI                               noarch 0:5.36-1.fc44             updates    275.7 KiB
+   replacing perl-URI                   noarch 0:5.34-3.fc44             fedora     268.0 KiB
+ perl-base                              noarch 0:2.27-525.fc44           updates     12.6 KiB
+   replacing perl-base                  noarch 0:2.27-523.fc44           fedora      12.6 KiB
+ perl-if                                noarch 0:0.61.000-525.fc44       updates      5.8 KiB
+   replacing perl-if                    noarch 0:0.61.000-523.fc44       fedora       5.8 KiB
+ perl-interpreter                       x86_64 4:5.42.3-525.fc44         updates    118.8 KiB
+   replacing perl-interpreter           x86_64 4:5.42.1-523.fc44         fedora     118.5 KiB
+ perl-lib                               x86_64 0:0.65-525.fc44           updates      8.5 KiB
+   replacing perl-lib                   x86_64 0:0.65-523.fc44           fedora       8.5 KiB
+ perl-libnet                            noarch 0:3.16-1.fc44             updates    293.5 KiB
+   replacing perl-libnet                noarch 0:3.15-522.fc44           fedora     289.4 KiB
+ perl-libs                              x86_64 4:5.42.3-525.fc44         updates     11.6 MiB
+   replacing perl-libs                  x86_64 4:5.42.1-523.fc44         fedora      11.6 MiB
+ perl-locale                            noarch 0:1.13-525.fc44           updates      6.1 KiB
+   replacing perl-locale                noarch 0:1.13-523.fc44           fedora       6.1 KiB
+ perl-mro                               x86_64 0:1.29-525.fc44           updates     41.4 KiB
+   replacing perl-mro                   x86_64 0:1.29-523.fc44           fedora      41.5 KiB
+ perl-overload                          noarch 0:1.40-525.fc44           updates     71.6 KiB
+   replacing perl-overload              noarch 0:1.40-523.fc44           fedora      71.6 KiB
+ perl-overloading                       noarch 0:0.02-525.fc44           updates      4.9 KiB
+   replacing perl-overloading           noarch 0:0.02-523.fc44           fedora       4.9 KiB
+ perl-podlators                         noarch 1:6.0.2-522.fc44          updates    317.7 KiB
+   replacing perl-podlators             noarch 1:6.0.2-521.fc44          fedora     317.5 KiB
+ perl-vars                              noarch 0:1.05-525.fc44           updates      3.9 KiB
+   replacing perl-vars                  noarch 0:1.05-523.fc44           fedora       3.9 KiB
+ python-pip-wheel                       noarch 0:26.0.1-3.fc44           updates      1.2 MiB
+   replacing python-pip-wheel           noarch 0:26.0.1-2.fc44           fedora       1.2 MiB
+ python-unversioned-command             noarch 0:3.14.10-1.fc44          updates     23.0   B
+   replacing python-unversioned-command noarch 0:3.14.3-2.fc44           fedora      23.0   B
+ python3                                x86_64 0:3.14.10-1.fc44          updates     28.7 KiB
+   replacing python3                    x86_64 0:3.14.3-2.fc44           fedora      28.7 KiB
+ python3-idna                           noarch 0:3.18-1.fc44             updates    522.3 KiB
+   replacing python3-idna               noarch 0:3.11-2.fc44             fedora     738.4 KiB
+ python3-libs                           x86_64 0:3.14.10-1.fc44          updates     44.2 MiB
+   replacing python3-libs               x86_64 0:3.14.3-2.fc44           fedora      43.7 MiB
+ python3-requests                       noarch 0:2.33.1-1.fc44           updates    477.3 KiB
+   replacing python3-requests           noarch 0:2.32.5-5.fc44           fedora     476.9 KiB
+ python3-urllib3                        noarch 0:2.8.0-3.fc44            updates      1.2 MiB
+   replacing python3-urllib3            noarch 0:2.6.3-2.fc44            fedora       1.1 MiB
+ python3-urllib3+socks                  noarch 0:2.8.0-3.fc44            updates      0.0   B
+   replacing python3-urllib3+socks      noarch 0:2.6.3-2.fc44            fedora       0.0   B
+ util-linux                             x86_64 0:2.41.6-1.fc44           updates      3.5 MiB
+   replacing util-linux                 x86_64 0:2.41.3-12.fc44          fedora       3.5 MiB
+ util-linux-core                        x86_64 0:2.41.6-1.fc44           updates      1.5 MiB
+   replacing util-linux-core            x86_64 0:2.41.3-12.fc44          fedora       1.5 MiB
+ vim-common                             x86_64 2:9.2.1302-2.fc44         updates     38.9 MiB
+   replacing vim-common                 x86_64 2:9.2.240-1.fc44          fedora      38.2 MiB
+ vim-data                               noarch 2:9.2.1302-2.fc44         updates     10.2 KiB
+   replacing vim-data                   noarch 2:9.2.240-1.fc44          fedora      10.2 KiB
+ vim-enhanced                           x86_64 2:9.2.1302-2.fc44         updates      4.5 MiB
+   replacing vim-enhanced               x86_64 2:9.2.240-1.fc44          fedora       4.4 MiB
+ vim-filesystem                         noarch 2:9.2.1302-2.fc44         updates     40.0   B
+   replacing vim-filesystem             noarch 2:9.2.240-1.fc44          fedora      40.0   B
+ vim-minimal                            x86_64 2:9.2.1302-2.fc44         updates      1.8 MiB
+   replacing vim-minimal                x86_64 2:9.2.240-1.fc44          fedora       1.8 MiB
+ which                                  x86_64 0:2.25-1.fc44             updates     83.6 KiB
+   replacing which                      x86_64 0:2.23-4.fc44             fedora      83.4 KiB
+ xxd                                    x86_64 2:9.2.1302-2.fc44         updates     33.3 KiB
+   replacing xxd                        x86_64 2:9.2.240-1.fc44          fedora      33.2 KiB
+Installing dependencies:
+ libgit2                                x86_64 0:1.9.7-1.fc44            updates      1.4 MiB
+ libssh2                                x86_64 0:1.11.1-9.fc44           updates    338.6 KiB
+ llhttp                                 x86_64 0:9.3.1-1.fc44            fedora      96.6 KiB
+ oniguruma                              x86_64 0:6.9.10-4.fc44           fedora     770.9 KiB
+ perl-Unicode-Normalize                 x86_64 0:1.32-521.fc44           fedora     486.0 KiB
+ pixman                                 x86_64 0:0.46.2-3.fc44           fedora     718.2 KiB
+Installing weak dependencies:
+ bat                                    x86_64 0:0.26.1-4.fc44           updates      5.3 MiB
+
+Transaction Summary:
+ Installing:         7 packages
+ Upgrading:         71 packages
+ Replacing:         71 packages
+
+Total size of inbound packages is 51 MiB. Need to download 51 MiB.
+After this operation, 14 MiB extra will be used (install 191 MiB, remove 177 MiB).
+[ 1/78] bat-0:0.26.1-4.fc44.x86_64      100% |   3.3 MiB/s |   2.5 MiB |  00m01s
+[ 2/78] perl-Unicode-Normalize-0:1.32-5 100% |  77.5 KiB/s |  74.4 KiB |  00m01s
+[ 3/78] pixman-0:0.46.2-3.fc44.x86_64   100% | 280.3 KiB/s | 297.4 KiB |  00m01s
+[ 4/78] libgit2-0:1.9.7-1.fc44.x86_64   100% |   1.3 MiB/s | 614.5 KiB |  00m00s
+[ 5/78] libssh2-0:1.11.1-9.fc44.x86_64  100% |   1.4 MiB/s | 149.1 KiB |  00m00s
+[ 6/78] oniguruma-0:6.9.10-4.fc44.x86_6 100% | 273.0 KiB/s | 220.0 KiB |  00m01s
+[ 7/78] llhttp-0:9.3.1-1.fc44.x86_64    100% |  66.3 KiB/s |  37.8 KiB |  00m01s
+[ 8/78] 7zip-0:26.04-1.fc44.x86_64      100% |   2.2 MiB/s |   1.3 MiB |  00m01s
+[ 9/78] curl-0:8.18.0-14.fc44.x86_64    100% | 377.0 KiB/s | 240.5 KiB |  00m01s
+[10/78] libcurl-0:8.18.0-14.fc44.x86_64 100% | 632.3 KiB/s | 456.5 KiB |  00m01s
+[11/78] openssl-libs-1:3.5.9-1.fc44.x86 100% |   2.7 MiB/s |   2.8 MiB |  00m01s
+[12/78] openssl-1:3.5.9-1.fc44.x86_64   100% | 965.6 KiB/s |   1.2 MiB |  00m01s
+[13/78] expat-0:2.9.0-1.fc44.x86_64     100% | 113.1 KiB/s | 136.0 KiB |  00m01s
+[14/78] git-0:2.56.0-1.fc44.x86_64      100% |  93.3 KiB/s |  40.8 KiB |  00m00s
+[15/78] git-core-0:2.56.0-1.fc44.x86_64 100% |   4.1 MiB/s |   5.7 MiB |  00m01s
+[16/78] perl-Git-0:2.56.0-1.fc44.noarch 100% |  27.6 KiB/s |  37.4 KiB |  00m01s
+[17/78] git-core-doc-0:2.56.0-1.fc44.no 100% |   1.6 MiB/s |   3.2 MiB |  00m02s
+[18/78] less-0:710-2.fc44.x86_64        100% | 352.0 KiB/s | 231.6 KiB |  00m01s
+[19/78] less-color-0:710-2.fc44.x86_64  100% |  16.6 KiB/s |  10.9 KiB |  00m01s
+[20/78] libblkid-0:2.41.6-1.fc44.x86_64 100% |   2.0 MiB/s | 130.0 KiB |  00m00s
+[21/78] libuuid-0:2.41.6-1.fc44.x86_64  100% | 778.5 KiB/s |  27.2 KiB |  00m00s
+[22/78] libmount-0:2.41.6-1.fc44.x86_64 100% |   2.3 MiB/s | 173.0 KiB |  00m00s
+[23/78] util-linux-0:2.41.6-1.fc44.x86_ 100% |   2.8 MiB/s |   1.2 MiB |  00m00s
+[24/78] util-linux-core-0:2.41.6-1.fc44 100% |   1.0 MiB/s | 559.1 KiB |  00m01s
+[25/78] libfdisk-0:2.41.6-1.fc44.x86_64 100% | 305.8 KiB/s | 168.8 KiB |  00m01s
+[26/78] liblastlog2-0:2.41.6-1.fc44.x86 100% | 125.2 KiB/s |  24.4 KiB |  00m00s
+[27/78] libsmartcols-0:2.41.6-1.fc44.x8 100% |   1.3 MiB/s |  87.4 KiB |  00m00s
+[28/78] libedit-0:3.1-59.20260512cvs.fc 100% |   1.8 MiB/s | 110.4 KiB |  00m00s
+[29/78] libsodium-0:1.0.22-1.fc44.x86_6 100% |   2.0 MiB/s | 210.0 KiB |  00m00s
+[30/78] openssh-0:10.2p1-16.fc44.x86_64 100% |   2.0 MiB/s | 355.9 KiB |  00m00s
+[31/78] openssh-clients-0:10.2p1-16.fc4 100% |   2.3 MiB/s | 778.5 KiB |  00m00s
+[32/78] perl-AutoLoader-0:5.74-525.fc44 100% |  74.2 KiB/s |  20.5 KiB |  00m00s
+[33/78] perl-B-0:1.89-525.fc44.x86_64   100% | 780.3 KiB/s | 177.1 KiB |  00m00s
+[34/78] perl-libs-4:5.42.3-525.fc44.x86 100% |   1.8 MiB/s |   2.6 MiB |  00m01s
+[35/78] perl-interpreter-4:5.42.3-525.f 100% |  48.8 KiB/s |  71.7 KiB |  00m01s
+[36/78] perl-Errno-0:1.38-525.fc44.x86_ 100% |   9.9 KiB/s |  14.3 KiB |  00m01s
+[37/78] perl-Class-Struct-0:0.68-525.fc 100% | 629.1 KiB/s |  21.4 KiB |  00m00s
+[38/78] perl-Data-Dumper-0:2.192-523.fc 100% |   1.3 MiB/s |  56.3 KiB |  00m00s
+[39/78] perl-DynaLoader-0:1.57-525.fc44 100% | 648.9 KiB/s |  25.3 KiB |  00m00s
+[40/78] perl-Fcntl-0:1.20-525.fc44.x86_ 100% | 675.8 KiB/s |  29.1 KiB |  00m00s
+[41/78] perl-File-Basename-0:2.86-525.f 100% | 588.7 KiB/s |  16.5 KiB |  00m00s
+[42/78] perl-File-stat-0:1.14-525.fc44. 100% | 681.7 KiB/s |  16.4 KiB |  00m00s
+[43/78] perl-FileHandle-0:2.05-525.fc44 100% | 643.8 KiB/s |  14.8 KiB |  00m00s
+[44/78] perl-Getopt-Std-0:1.14-525.fc44 100% | 600.0 KiB/s |  15.0 KiB |  00m00s
+[45/78] perl-HTTP-Tiny-0:0.096-1.fc44.n 100% |   1.3 MiB/s |  57.8 KiB |  00m00s
+[46/78] perl-IO-0:1.55-525.fc44.x86_64  100% |   1.3 MiB/s |  81.5 KiB |  00m00s
+[47/78] perl-IPC-Open3-0:1.24-525.fc44. 100% | 393.7 KiB/s |  23.2 KiB |  00m00s
+[48/78] perl-NDBM_File-0:1.18-525.fc44. 100% | 507.6 KiB/s |  21.8 KiB |  00m00s
+[49/78] perl-SelectSaver-0:1.02-525.fc4 100% | 256.6 KiB/s |  11.0 KiB |  00m00s
+[50/78] perl-POSIX-0:2.23-525.fc44.x86_ 100% |   1.7 MiB/s |  96.3 KiB |  00m00s
+[51/78] perl-Socket-4:2.043-1.fc44.x86_ 100% | 923.5 KiB/s |  55.4 KiB |  00m00s
+[52/78] perl-Symbol-0:1.09-525.fc44.noa 100% | 563.0 KiB/s |  13.5 KiB |  00m00s
+[53/78] perl-URI-0:5.36-1.fc44.noarch   100% |   2.0 MiB/s | 149.3 KiB |  00m00s
+[54/78] perl-base-0:2.27-525.fc44.noarc 100% | 272.4 KiB/s |  15.5 KiB |  00m00s
+[55/78] perl-if-0:0.61.000-525.fc44.noa 100% | 229.4 KiB/s |  13.3 KiB |  00m00s
+[56/78] perl-lib-0:0.65-525.fc44.x86_64 100% | 619.0 KiB/s |  14.2 KiB |  00m00s
+[57/78] perl-libnet-0:3.16-1.fc44.noarc 100% |   2.1 MiB/s | 129.0 KiB |  00m00s
+[58/78] perl-locale-0:1.13-525.fc44.noa 100% | 168.5 KiB/s |  12.8 KiB |  00m00s
+[59/78] perl-mro-0:1.29-525.fc44.x86_64 100% | 441.2 KiB/s |  29.1 KiB |  00m00s
+[60/78] perl-overload-0:1.40-525.fc44.n 100% |   1.0 MiB/s |  44.9 KiB |  00m00s
+[61/78] perl-overloading-0:0.02-525.fc4 100% | 508.7 KiB/s |  12.2 KiB |  00m00s
+[62/78] perl-podlators-1:6.0.2-522.fc44 100% |   1.9 MiB/s | 128.2 KiB |  00m00s
+[63/78] perl-vars-0:1.05-525.fc44.noarc 100% | 250.8 KiB/s |  12.3 KiB |  00m00s
+[64/78] python-pip-wheel-0:26.0.1-3.fc4 100% |   2.9 MiB/s |   1.1 MiB |  00m00s
+[65/78] python-unversioned-command-0:3. 100% |  33.8 KiB/s |  11.7 KiB |  00m00s
+[66/78] python3-0:3.14.10-1.fc44.x86_64 100% |  83.9 KiB/s |  29.5 KiB |  00m00s
+[67/78] python3-libs-0:3.14.10-1.fc44.x 100% |   3.8 MiB/s |  10.2 MiB |  00m03s
+[68/78] python3-requests-0:2.33.1-1.fc4 100% |  59.3 KiB/s | 160.6 KiB |  00m03s
+[69/78] python3-idna-0:3.18-1.fc44.noar 100% |  37.9 KiB/s | 104.1 KiB |  00m03s
+[70/78] python3-urllib3-0:2.8.0-3.fc44. 100% |   3.1 MiB/s | 310.7 KiB |  00m00s
+[71/78] python3-urllib3+socks-0:2.8.0-3 100% | 107.8 KiB/s |  10.1 KiB |  00m00s
+[72/78] vim-common-2:9.2.1302-2.fc44.x8 100% |   2.6 MiB/s |   8.5 MiB |  00m03s
+[73/78] vim-data-2:9.2.1302-2.fc44.noar 100% |   5.5 KiB/s |  17.6 KiB |  00m03s
+[74/78] vim-enhanced-2:9.2.1302-2.fc44. 100% | 592.2 KiB/s |   2.2 MiB |  00m04s
+[75/78] vim-minimal-2:9.2.1302-2.fc44.x 100% |   1.1 MiB/s | 898.0 KiB |  00m01s
+[76/78] vim-filesystem-2:9.2.1302-2.fc4 100% |  20.0 KiB/s |  15.6 KiB |  00m01s
+[77/78] which-0:2.25-1.fc44.x86_64      100% | 173.8 KiB/s |  42.1 KiB |  00m00s
+[78/78] xxd-2:9.2.1302-2.fc44.x86_64    100% |   1.1 MiB/s |  31.7 KiB |  00m00s
+--------------------------------------------------------------------------------
+[78/78] Total                           100% |   3.2 MiB/s |  50.5 MiB |  00m16s
+Running transaction
+[  1/151] Verify package files          100% | 168.0   B/s |  78.0   B |  00m00s
+[  2/151] Prepare transaction           100% |   1.1 KiB/s | 149.0   B |  00m00s
+[  3/151] Upgrading openssl-libs-1:3.5. 100% | 164.5 MiB/s |   9.2 MiB |  00m00s
+[  4/151] Upgrading libuuid-0:2.41.6-1. 100% |  18.7 MiB/s |  38.3 KiB |  00m00s
+[  5/151] Upgrading libblkid-0:2.41.6-1 100% |  53.8 MiB/s | 275.4 KiB |  00m00s
+[  6/151] Upgrading libmount-0:2.41.6-1 100% |  64.1 MiB/s | 393.8 KiB |  00m00s
+[  7/151] Upgrading libcurl-0:8.18.0-14 100% |  99.8 MiB/s |   1.0 MiB |  00m00s
+[  8/151] Upgrading vim-data-2:9.2.1302 100% |   5.5 MiB/s |  11.3 KiB |  00m00s
+[  9/151] Upgrading libsmartcols-0:2.41 100% |  46.3 MiB/s | 189.5 KiB |  00m00s
+[ 10/151] Upgrading less-0:710-2.fc44.x 100% |  19.2 MiB/s | 492.0 KiB |  00m00s
+[ 11/151] Upgrading expat-0:2.9.0-1.fc4 100% |  17.2 MiB/s | 351.7 KiB |  00m00s
+[ 12/151] Upgrading util-linux-core-0:2 100% |  29.6 MiB/s |   1.5 MiB |  00m00s
+[ 13/151] Upgrading libfdisk-0:2.41.6-1 100% |  63.4 MiB/s | 389.4 KiB |  00m00s
+[ 14/151] Installing libssh2-0:1.11.1-9 100% |  55.4 MiB/s | 340.2 KiB |  00m00s
+[ 15/151] Upgrading perl-libs-4:5.42.3- 100% |  54.3 MiB/s |  11.7 MiB |  00m00s
+[ 16/151] Upgrading perl-vars-0:1.05-52 100% |   4.2 MiB/s |   4.3 KiB |  00m00s
+[ 17/151] Upgrading perl-DynaLoader-0:1 100% |  15.9 MiB/s |  32.5 KiB |  00m00s
+[ 18/151] Upgrading perl-Fcntl-0:1.20-5 100% |  16.2 MiB/s |  49.8 KiB |  00m00s
+[ 19/151] Upgrading perl-Symbol-0:1.09- 100% |   7.1 MiB/s |   7.3 KiB |  00m00s
+[ 20/151] Upgrading perl-locale-0:1.13- 100% |   6.4 MiB/s |   6.5 KiB |  00m00s
+[ 21/151] Upgrading perl-POSIX-0:2.23-5 100% |  56.3 MiB/s | 230.6 KiB |  00m00s
+[ 22/151] Upgrading perl-Errno-0:1.38-5 100% |   8.6 MiB/s |   8.8 KiB |  00m00s
+[ 23/151] Upgrading perl-File-Basename- 100% |  14.3 MiB/s |  14.6 KiB |  00m00s
+[ 24/151] Upgrading perl-Socket-4:2.043 100% |  30.2 MiB/s | 123.8 KiB |  00m00s
+[ 25/151] Upgrading perl-interpreter-4: 100% |   6.5 MiB/s | 120.5 KiB |  00m00s
+[ 26/151] Upgrading perl-overloading-0: 100% |   5.4 MiB/s |   5.6 KiB |  00m00s
+[ 27/151] Upgrading perl-SelectSaver-0: 100% |   2.6 MiB/s |   2.6 KiB |  00m00s
+[ 28/151] Installing perl-Unicode-Norma 100% | 119.2 MiB/s | 488.3 KiB |  00m00s
+[ 29/151] Upgrading perl-Class-Struct-0 100% |  25.3 MiB/s |  25.9 KiB |  00m00s
+[ 30/151] Upgrading perl-base-0:2.27-52 100% |  12.7 MiB/s |  13.0 KiB |  00m00s
+[ 31/151] Upgrading perl-if-0:0.61.000- 100% |   6.1 MiB/s |   6.2 KiB |  00m00s
+[ 32/151] Upgrading perl-B-0:1.89-525.f 100% |  54.7 MiB/s | 504.4 KiB |  00m00s
+[ 33/151] Upgrading perl-Data-Dumper-0: 100% |  28.7 MiB/s | 117.4 KiB |  00m00s
+[ 34/151] Upgrading perl-lib-0:0.65-525 100% |   8.7 MiB/s |   8.9 KiB |  00m00s
+[ 35/151] Upgrading perl-mro-0:1.29-525 100% |  13.8 MiB/s |  42.5 KiB |  00m00s
+[ 36/151] Upgrading perl-overload-0:1.4 100% |  70.3 MiB/s |  72.0 KiB |  00m00s
+[ 37/151] Upgrading perl-File-stat-0:1. 100% |  12.8 MiB/s |  13.1 KiB |  00m00s
+[ 38/151] Upgrading perl-IO-0:1.55-525. 100% |  24.7 MiB/s | 151.5 KiB |  00m00s
+[ 39/151] Upgrading perl-FileHandle-0:2 100% |   9.6 MiB/s |   9.8 KiB |  00m00s
+[ 40/151] Upgrading perl-libnet-0:3.16- 100% |  36.5 MiB/s | 298.8 KiB |  00m00s
+[ 41/151] Upgrading perl-IPC-Open3-0:1. 100% |  13.9 MiB/s |  28.5 KiB |  00m00s
+[ 42/151] Upgrading xxd-2:9.2.1302-2.fc 100% |   2.0 MiB/s |  34.4 KiB |  00m00s
+[ 43/151] Upgrading which-0:2.25-1.fc44 100% |   4.7 MiB/s |  85.8 KiB |  00m00s
+[ 44/151] Upgrading vim-filesystem-2:9. 100% | 346.0 KiB/s |   4.8 KiB |  00m00s
+[ 45/151] Upgrading vim-common-2:9.2.13 100% |  69.6 MiB/s |  39.3 MiB |  00m01s
+[ 46/151] Upgrading python-pip-wheel-0: 100% | 102.0 MiB/s |   1.2 MiB |  00m00s
+[ 47/151] Upgrading python3-libs-0:3.14 100% |  92.6 MiB/s |  44.6 MiB |  00m00s
+[ 48/151] Upgrading python3-0:3.14.10-1 100% |   1.6 MiB/s |  30.4 KiB |  00m00s
+[ 49/151] Upgrading python3-idna-0:3.18 100% |  19.2 MiB/s | 530.2 KiB |  00m00s
+[ 50/151] Upgrading python3-urllib3-0:2 100% |  36.9 MiB/s |   1.2 MiB |  00m00s
+[ 51/151] Upgrading libsodium-0:1.0.22- 100% | 117.8 MiB/s | 482.6 KiB |  00m00s
+[ 52/151] Upgrading libedit-0:3.1-59.20 100% |  81.4 MiB/s | 250.0 KiB |  00m00s
+[ 53/151] Upgrading liblastlog2-0:2.41. 100% |   2.9 MiB/s |  43.8 KiB |  00m00s
+[ 54/151] Upgrading util-linux-0:2.41.6 100% |  31.5 MiB/s |   3.6 MiB |  00m00s
+[ 55/151] Upgrading openssh-0:10.2p1-16 100% |  57.3 MiB/s |   1.4 MiB |  00m00s
+[ 56/151] Upgrading openssh-clients-0:1 100% |  49.8 MiB/s |   2.7 MiB |  00m00s
+[ 57/151] Upgrading git-core-0:2.56.0-1 100% | 169.2 MiB/s |  27.7 MiB |  00m00s
+[ 58/151] Upgrading git-core-doc-0:2.56 100% | 802.8 MiB/s |  19.3 MiB |  00m00s
+[ 59/151] Upgrading git-0:2.56.0-1.fc44 100% |  19.2 MiB/s |  59.0 KiB |  00m00s
+[ 60/151] Upgrading perl-Git-0:2.56.0-1 100% |  31.9 MiB/s |  65.4 KiB |  00m00s
+[ 61/151] Installing llhttp-0:9.3.1-1.f 100% |  47.9 MiB/s |  98.0 KiB |  00m00s
+[ 62/151] Installing libgit2-0:1.9.7-1. 100% | 155.5 MiB/s |   1.4 MiB |  00m00s
+[ 63/151] Installing oniguruma-0:6.9.10 100% | 151.0 MiB/s | 773.1 KiB |  00m00s
+[ 64/151] Installing pixman-0:0.46.2-3. 100% | 140.5 MiB/s | 719.3 KiB |  00m00s
+[ 65/151] Upgrading vim-enhanced-2:9.2. 100% |  87.3 MiB/s |   4.5 MiB |  00m00s
+[ 66/151] Installing bat-0:0.26.1-4.fc4 100% | 129.0 MiB/s |   5.3 MiB |  00m00s
+[ 67/151] Upgrading python3-requests-0: 100% |  31.9 MiB/s | 489.5 KiB |  00m00s
+[ 68/151] Upgrading python3-urllib3+soc 100% |   0.0   B/s | 124.0   B |  00m00s
+[ 69/151] Upgrading python-unversioned- 100% |  25.9 KiB/s | 424.0   B |  00m00s
+[ 70/151] Upgrading perl-URI-0:5.36-1.f 100% |  18.8 MiB/s | 289.5 KiB |  00m00s
+[ 71/151] Upgrading perl-HTTP-Tiny-0:0. 100% |  53.5 MiB/s | 164.5 KiB |  00m00s
+[ 72/151] Upgrading perl-podlators-1:6. 100% |  15.0 MiB/s | 321.7 KiB |  00m00s
+[ 73/151] Upgrading perl-AutoLoader-0:5 100% |  20.5 MiB/s |  21.0 KiB |  00m00s
+[ 74/151] Upgrading perl-Getopt-Std-0:1 100% |  11.5 MiB/s |  11.8 KiB |  00m00s
+[ 75/151] Upgrading perl-NDBM_File-0:1. 100% |  14.4 MiB/s |  29.5 KiB |  00m00s
+[ 76/151] Upgrading less-color-0:710-2. 100% | 165.8 KiB/s |   2.7 KiB |  00m00s
+[ 77/151] Upgrading vim-minimal-2:9.2.1 100% |  53.0 MiB/s |   1.8 MiB |  00m00s
+[ 78/151] Upgrading curl-0:8.18.0-14.fc 100% |  21.4 MiB/s | 482.7 KiB |  00m00s
+[ 79/151] Upgrading openssl-1:3.5.9-1.f 100% |  63.5 MiB/s |   1.9 MiB |  00m00s
+[ 80/151] Upgrading 7zip-0:26.04-1.fc44 100% |  67.0 MiB/s |   3.4 MiB |  00m00s
+[ 81/151] Removing openssl-1:3.5.5-1.fc 100% |  32.2 KiB/s | 363.0   B |  00m00s
+[ 82/151] Removing git-0:2.53.0-1.fc44. 100% |   7.8 KiB/s |   8.0   B |  00m00s
+[ 83/151] Removing perl-URI-0:5.34-3.fc 100% |  46.9 KiB/s |  96.0   B |  00m00s
+[ 84/151] Removing perl-libnet-0:3.15-5 100% |  34.2 KiB/s |  35.0   B |  00m00s
+[ 85/151] Removing perl-IPC-Open3-0:1.2 100% |   4.9 KiB/s |   5.0   B |  00m00s
+[ 86/151] Removing perl-HTTP-Tiny-0:0.0 100% |   1.3 KiB/s |  13.0   B |  00m00s
+[ 87/151] Removing perl-podlators-1:6.0 100% |   2.5 KiB/s |  26.0   B |  00m00s
+[ 88/151] Removing perl-File-Basename-0 100% |   0.0   B/s |   3.0   B |  00m00s
+[ 89/151] Removing perl-FileHandle-0:2. 100% |   0.0   B/s |   2.0   B |  00m00s
+[ 90/151] Removing perl-Git-0:2.53.0-1. 100% |   0.0   B/s |   6.0   B |  00m00s
+[ 91/151] Removing perl-base-0:2.27-523 100% |   0.0   B/s |   2.0   B |  00m00s
+[ 92/151] Removing perl-lib-0:0.65-523. 100% |   2.0 KiB/s |   2.0   B |  00m00s
+[ 93/151] Removing python3-requests-0:2 100% |  32.2 KiB/s |  66.0   B |  00m00s
+[ 94/151] Removing perl-Getopt-Std-0:1. 100% |   0.0   B/s |   3.0   B |  00m00s
+[ 95/151] Removing perl-AutoLoader-0:5. 100% |   0.0   B/s |   2.0   B |  00m00s
+[ 96/151] Removing python3-urllib3+sock 100% |   1.0 KiB/s |   1.0   B |  00m00s
+[ 97/151] Removing python3-urllib3-0:2. 100% |  11.5 KiB/s | 129.0   B |  00m00s
+[ 98/151] Removing less-color-0:691-2.f 100% | 187.0   B/s |   3.0   B |  00m00s
+[ 99/151] Removing perl-IO-0:1.55-523.f 100% |  14.2 KiB/s |  29.0   B |  00m00s
+[100/151] Removing perl-B-0:1.89-523.fc 100% |  22.5 KiB/s |  23.0   B |  00m00s
+[101/151] Removing perl-POSIX-0:2.23-52 100% |   7.8 KiB/s |   8.0   B |  00m00s
+[102/151] Removing perl-Data-Dumper-0:2 100% |  11.7 KiB/s |  12.0   B |  00m00s
+[103/151] Removing perl-Socket-4:2.040- 100% |  12.7 KiB/s |  13.0   B |  00m00s
+[104/151] Removing perl-File-stat-0:1.1 100% |   0.0   B/s |   3.0   B |  00m00s
+[105/151] Removing perl-NDBM_File-0:1.1 100% |   6.8 KiB/s |   7.0   B |  00m00s
+[106/151] Removing perl-overload-0:1.40 100% |   0.0   B/s |   2.0   B |  00m00s
+[107/151] Removing perl-Class-Struct-0: 100% |   0.0   B/s |   3.0   B |  00m00s
+[108/151] Removing perl-locale-0:1.13-5 100% |   0.0   B/s |   2.0   B |  00m00s
+[109/151] Removing perl-Errno-0:1.38-52 100% |   2.0 KiB/s |   2.0   B |  00m00s
+[110/151] Removing perl-mro-0:1.29-523. 100% |   6.8 KiB/s |   7.0   B |  00m00s
+[111/151] Removing perl-Fcntl-0:1.20-52 100% | 777.0   B/s |   7.0   B |  00m00s
+[112/151] Removing perl-interpreter-4:5 100% | 687.0   B/s |  11.0   B |  00m00s
+[113/151] Removing perl-overloading-0:0 100% |   0.0   B/s |   4.0   B |  00m00s
+[114/151] Removing perl-SelectSaver-0:1 100% |   0.0   B/s |   2.0   B |  00m00s
+[115/151] Removing perl-Symbol-0:1.09-5 100% | 222.0   B/s |   2.0   B |  00m00s
+[116/151] Removing vim-enhanced-2:9.2.2 100% | 769.0   B/s |  10.0   B |  00m00s
+[117/151] Removing vim-common-2:9.2.240 100% | 366.6 KiB/s |   2.6 KiB |  00m00s
+[118/151] Removing perl-if-0:0.61.000-5 100% | 222.0   B/s |   2.0   B |  00m00s
+[119/151] Removing curl-0:8.18.0-4.fc44 100% |   1.8 KiB/s |  18.0   B |  00m00s
+[120/151] Removing python3-idna-0:3.11- 100% |  12.0 KiB/s |  37.0   B |  00m00s
+[121/151] Removing git-core-doc-0:2.53. 100% | 104.1 KiB/s |   1.4 KiB |  00m00s
+[122/151] Removing python-unversioned-c 100% | 117.0   B/s |   2.0   B |  00m00s
+[123/151] Removing git-core-0:2.53.0-1. 100% |  21.3 KiB/s | 262.0   B |  00m00s
+[124/151] Removing libcurl-0:8.18.0-4.f 100% | 368.0   B/s |   7.0   B |  00m00s
+[125/151] Removing openssh-clients-0:10 100% |   1.9 KiB/s |  41.0   B |  00m00s
+[126/151] Removing openssh-0:10.2p1-7.f 100% | 931.0   B/s |  27.0   B |  00m00s
+[127/151] Removing util-linux-0:2.41.3- 100% |  12.9 KiB/s | 474.0   B |  00m00s
+[128/151] Removing util-linux-core-0:2. 100% |  11.2 KiB/s | 149.0   B |  00m00s
+[129/151] Removing libfdisk-0:2.41.3-12 100% |   6.8 KiB/s |   7.0   B |  00m00s
+[130/151] Removing libmount-0:2.41.3-12 100% | 700.0   B/s |   7.0   B |  00m00s
+[131/151] Removing python3-0:3.14.3-2.f 100% | 923.0   B/s |  12.0   B |  00m00s
+[132/151] Removing python3-libs-0:3.14. 100% | 175.7 KiB/s |   2.3 KiB |  00m00s
+[133/151] Removing libblkid-0:2.41.3-12 100% |   3.4 KiB/s |   7.0   B |  00m00s
+[134/151] Removing perl-libs-4:5.42.1-5 100% | 156.6 KiB/s | 802.0   B |  00m00s
+[135/151] Removing perl-DynaLoader-0:1. 100% |   2.0 KiB/s |   2.0   B |  00m00s
+[136/151] Removing perl-vars-0:1.05-523 100% | 222.0   B/s |   2.0   B |  00m00s
+[137/151] Removing vim-minimal-2:9.2.24 100% |   1.5 KiB/s |  15.0   B |  00m00s
+[138/151] Removing vim-data-2:9.2.240-1 100% |   0.0   B/s |   7.0   B |  00m00s
+[139/151] Removing python-pip-wheel-0:2 100% |   0.0   B/s |   4.0   B |  00m00s
+[140/151] Removing vim-filesystem-2:9.2 100% |  16.6 KiB/s |  34.0   B |  00m00s
+[141/151] Removing libuuid-0:2.41.3-12. 100% | 600.0   B/s |   6.0   B |  00m00s
+[142/151] Removing expat-0:2.7.3-2.fc44 100% |   1.4 KiB/s |  14.0   B |  00m00s
+[143/151] Removing openssl-libs-1:3.5.5 100% |  12.7 KiB/s |  39.0   B |  00m00s
+[144/151] Removing libsmartcols-0:2.41. 100% |   2.9 KiB/s |   6.0   B |  00m00s
+[145/151] Removing liblastlog2-0:2.41.3 100% |   1.4 KiB/s |  14.0   B |  00m00s
+[146/151] Removing libedit-0:3.1-58.202 100% |   1.0 KiB/s |  11.0   B |  00m00s
+[147/151] Removing less-0:691-2.fc44.x8 100% | 925.0   B/s |  25.0   B |  00m00s
+[148/151] Removing xxd-2:9.2.240-1.fc44 100% | 700.0   B/s |   7.0   B |  00m00s
+[149/151] Removing libsodium-0:1.0.21-3 100% | 700.0   B/s |   7.0   B |  00m00s
+[150/151] Removing which-0:2.23-4.fc44. 100% | 600.0   B/s |  15.0   B |  00m00s
+[151/151] Removing 7zip-0:25.01-5.fc44. 100% |   3.0   B/s |  16.0   B |  00m04s
+Complete!

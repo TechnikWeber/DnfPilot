@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.technikweber.dnfpilot</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>DnfPilot</name>
+  <summary>Update Fedora with dnf and Flatpak, without Discover's offline update</summary>
+  <description>
+    <p>
+      A small window that runs dnf upgrade --refresh and flatpak update for you,
+      with a progress bar, fold-out details and a restart button. One password
+      prompt per update, no terminal.
+    </p>
+    <p>
+      The Repair menu covers the usual fixes when Discover's offline update keeps
+      failing: cancel the scheduled offline update, reload package lists, resolve
+      package conflicts and clear the PackageKit cache.
+    </p>
+  </description>
+  <launchable type="desktop-id">dnfpilot.desktop</launchable>
+  <url type="homepage">https://github.com/TechnikWeber/DnfPilot</url>
+  <url type="bugtracker">https://github.com/TechnikWeber/DnfPilot/issues</url>
+  <developer id="io.github.technikweber">
+    <name>Philipp Weber</name>
+  </developer>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/TechnikWeber/DnfPilot/main/docs/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-11-11"/>
+  </releases>
+</component>

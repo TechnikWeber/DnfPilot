@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Launcher: prefers a local virtualenv, falls back to the system PySide6.
+set -euo pipefail
+
+here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+
+if [[ -x "$here/.venv/bin/python" ]]; then
+    exec "$here/.venv/bin/python" -m dnfpilot "$@"
+fi
+
+if ! python3 -c "import PySide6.QtWidgets" 2>/dev/null; then
+    echo "dnfpilot: PySide6 is missing. Install it with:  sudo dnf install python3-pyside6" >&2
+    command -v kdialog >/dev/null && kdialog --error "PySide6 is missing.\n\nsudo dnf install python3-pyside6" || true
+    exit 1
+fi
+
+cd "$here"
+exec python3 -m dnfpilot "$@"

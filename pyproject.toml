@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dnfpilot"
+dynamic = ["version"]
+description = "Update Fedora with dnf and Flatpak, without Discover's offline update"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Philipp Weber" }]
+keywords = ["fedora", "dnf", "flatpak", "update", "qt"]
+classifiers = [
+    "Environment :: X11 Applications :: Qt",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Software Distribution",
+]
+dependencies = ["PySide6>=6.5"]
+
+[project.urls]
+Homepage = "https://github.com/TechnikWeber/DnfPilot"
+
+[project.gui-scripts]
+dnfpilot = "dnfpilot.app:main"
+
+[tool.setuptools]
+packages = ["dnfpilot"]
+
+[tool.setuptools.dynamic]
+version = { attr = "dnfpilot.__version__" }
+
+[tool.setuptools.package-data]
+dnfpilot = ["helper.sh", "dnfpilot.svg"]

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=DnfPilot (Terminal)
+Name[de]=Fedora aktualisieren (Terminal)
+Comment=Update Fedora with dnf and Flatpak in a terminal window
+Comment[de]=System und Flatpak-Apps im Terminal aktualisieren (ohne Discover-Offline-Update)
+Exec=dnfpilot-terminal
+Icon=system-software-update
+Terminal=false
+Categories=System;

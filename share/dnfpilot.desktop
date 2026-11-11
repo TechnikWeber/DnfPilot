@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=DnfPilot
+GenericName=System updater
+GenericName[de]=System-Aktualisierung
+Comment=Update Fedora with dnf and Flatpak, without Discover's offline update
+Comment[de]=Fedora mit dnf und Flatpak aktualisieren, ohne Discovers Offline-Update
+Exec=dnfpilot
+Icon=dnfpilot
+Terminal=false
+Categories=System;PackageManager;
+Keywords=update;upgrade;dnf;flatpak;reboot;
+Keywords[de]=update;aktualisieren;dnf;flatpak;neustart;
+StartupNotify=true
+StartupWMClass=dnfpilot
