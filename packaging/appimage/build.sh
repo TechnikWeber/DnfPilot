@@ -57,10 +57,13 @@ rm -rf AppDir/opt/python$PY/lib/python$PY/{test,idlelib,tkinter,ensurepip,lib2to
 
 # ---- 4. AppImage metadata -------------------------------------------------
 rm -f AppDir/*.desktop AppDir/*.png AppDir/*.svg AppDir/.DirIcon AppDir/usr/share/metainfo/*.xml
+# python-appimage ships AppRun as a symlink into usr/bin; writing through it
+# would clobber the target, so replace the link with a real file
+rm -f AppDir/AppRun
 cat > AppDir/AppRun <<EOF
 #!/bin/bash
 # -I: ignore PYTHONPATH and user site-packages, only use what is bundled
-here="\$(dirname "\$(readlink -f "\${0}")")"
+here="\${APPDIR:-\$(dirname "\$(readlink -f "\${0}")")}"
 exec "\$here/$python_rel" -I -m dnfpilot "\$@"
 EOF
 chmod +x AppDir/AppRun
