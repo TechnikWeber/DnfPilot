@@ -388,6 +388,16 @@ def nvidia_module_pending() -> bool:
         return False
 
 
+SYSUP_MIN_FREE_GB = 6
+
+
+def free_gb(path: str = "/") -> float:
+    try:
+        return shutil.disk_usage(path).free / 1e9
+    except OSError:
+        return float("inf")
+
+
 def have(program: str) -> bool:
     return shutil.which(program) is not None
 

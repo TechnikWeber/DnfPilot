@@ -467,6 +467,19 @@ class MainWindow(QWidget):
             self._run_job(job)
 
     def _confirm_sysup(self) -> bool:
+        free = backend.free_gb("/")
+        if free < backend.SYSUP_MIN_FREE_GB:
+            box = QMessageBox(QMessageBox.Warning, tr("Upgrade to Fedora {new}", new=self.newest), tr(
+                "Only {free:.1f} GB are free on the system disk. An upgrade needs at least {need} GB for the "
+                "download and the installation – free up space first (e.g. old files in ~/Downloads, "
+                "~/.cache, unused Flatpaks: flatpak uninstall --unused).",
+                free=free, need=backend.SYSUP_MIN_FREE_GB), parent=self)
+            go = box.addButton(tr("Try anyway"), QMessageBox.AcceptRole)
+            box.addButton(tr("Cancel"), QMessageBox.RejectRole)
+            box.setDefaultButton(box.buttons()[-1])
+            box.exec()
+            if box.clickedButton() is not go:
+                return False
         box = QMessageBox(QMessageBox.Question, tr("Upgrade to Fedora {new}", new=self.newest), tr(
             "How it works:\n\n"
             "1. Fedora {cur} is brought fully up to date.\n"

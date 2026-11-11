@@ -117,6 +117,9 @@ DE = {
         "Die Updates sind installiert. Der NVIDIA-Treiber wird noch für den neuen Kernel gebaut – der Neustart-Knopf wird frei, sobald er fertig ist (meist innerhalb von 5 Minuten).",
     "{what} failed. The details below show the original message.\n\nOften this helps: Repair → “Reload package lists, then update”. For conflicts between packages: Repair → “Resolve package conflicts”.":
         "{what} ist fehlgeschlagen. Die Details unten zeigen die Originalmeldung.\n\nOft hilft: Reparieren → „Paketlisten neu laden, dann aktualisieren“. Bei Konflikten zwischen Paketen: Reparieren → „Paketkonflikte lösen“.",
+    "Only {free:.1f} GB are free on the system disk. An upgrade needs at least {need} GB for the download and the installation – free up space first (e.g. old files in ~/Downloads, ~/.cache, unused Flatpaks: flatpak uninstall --unused).":
+        "Auf der Systemplatte sind nur {free:.1f} GB frei. Ein Upgrade braucht mindestens {need} GB für Download und Installation – erst Platz schaffen (z. B. alte Dateien in ~/Downloads, ~/.cache, ungenutzte Flatpaks: flatpak uninstall --unused).",
+    "Try anyway": "Trotzdem versuchen",
 }
 
 

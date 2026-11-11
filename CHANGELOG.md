@@ -6,6 +6,7 @@
   upgrades with `dnf system-upgrade` (download while you work, install on
   restart). Discover does not report new releases on Fedora with the dnf5
   PackageKit backend, so this reads fedoraproject.org/releases.json itself.
+  Warns first when less than 6 GB are free on the system disk.
 - **Firmware:** fwupd updates appear in the list and are installed with the
   rest (switch off with "Include firmware"); Repair → "Update firmware only".
 - **NVIDIA:** the Restart button stays locked while akmods builds the driver
