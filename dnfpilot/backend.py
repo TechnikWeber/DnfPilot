@@ -24,6 +24,8 @@ class Package:
     version: str
     source: str  # dnf repo, or "Flatpak"
     kind: str  # "rpm" or "flatpak"
+    ref: str = ""  # flatpak only: app/<id>/<arch>/<branch>
+    commit: str = ""  # flatpak only: the remote commit (an image digest on OCI remotes)
 
 
 # ---------------------------------------------------------------- dnf check
@@ -56,23 +58,63 @@ def parse_check_upgrade(text: str) -> list[Package]:
 # ---------------------------------------------------------------- flatpak
 
 def parse_flatpak_updates(text: str) -> list[Package]:
-    """Parse `flatpak remote-ls --updates --columns=application,name,version,branch`."""
+    """Parse `flatpak remote-ls --updates --columns=application,name,version,branch,ref,commit`."""
     pkgs: list[Package] = []
     seen: set[tuple[str, str]] = set()
     for line in text.splitlines():
-        cols = line.split("\t")
-        if len(cols) < 2 or not cols[0].strip():
+        cols = [c.strip() for c in line.split("\t")]
+        if len(cols) < 2 or not cols[0]:
             continue
-        app = cols[0].strip()
-        name = cols[1].strip() or app
-        version = cols[2].strip() if len(cols) > 2 else ""
-        branch = cols[3].strip() if len(cols) > 3 else ""
+        cols += [""] * (6 - len(cols))
+        app, name, version, branch, ref, commit = cols[:6]
         key = (app, branch)
         if key in seen:
             continue
         seen.add(key)
-        pkgs.append(Package(name, version or branch, app, "flatpak"))
+        pkgs.append(Package(name or app, version or branch, app, "flatpak", ref, commit))
     return pkgs
+
+
+def parse_flatpak_alt_id(text: str) -> str:
+    """The ``Alt-id`` line of `flatpak info` (LC_ALL=C), or "" if there is none."""
+    for line in text.splitlines():
+        key, sep, value = line.strip().partition(":")
+        if sep and key == "Alt-id":
+            return value.strip()
+    return ""
+
+
+def drop_current_flatpaks(pkgs: list[Package], alt_ids=None) -> list[Package]:
+    """Drop flatpaks that `remote-ls --updates` lists although they are current.
+
+    On OCI remotes (Fedora's own flatpaks) remote-ls reports the image digest
+    as the commit, while the installed copy has a locally made ostree commit
+    that only remembers the digest as its Alt-id. The two never match, so
+    remote-ls lists those refs forever and `flatpak update` rightly finds
+    nothing to do. A ref is current when an installed copy's Alt-id is the
+    remote commit; remote-ls shortens it to 12 characters, so compare the start.
+    """
+    alt_ids = alt_ids or installed_flatpak_alt_ids
+    out = []
+    for p in pkgs:
+        if (p.kind == "flatpak" and p.ref and len(p.commit) >= 12
+                and any(a.startswith(p.commit) for a in alt_ids(p.ref))):
+            continue
+        out.append(p)
+    return out
+
+
+def installed_flatpak_alt_ids(ref: str) -> set[str]:
+    ids = set()
+    for inst in ("--user", "--system"):
+        try:
+            res = subprocess.run(["flatpak", "info", inst, ref], capture_output=True, text=True,
+                                 timeout=10, env={**os.environ, **CMD_ENV})
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if res.returncode == 0 and (alt := parse_flatpak_alt_id(res.stdout)):
+            ids.add(alt)
+    return ids
 
 
 # ---------------------------------------------------------------- firmware
@@ -363,7 +405,7 @@ def pkexec_command(actions: list[str]) -> tuple[str, list[str]]:
 
 
 CHECK_DNF = ("dnf", ["check-upgrade", "--refresh", "--assumeno"])
-CHECK_FLATPAK = ("flatpak", ["remote-ls", "--updates", "--columns=application,name,version,branch"])
+CHECK_FLATPAK = ("flatpak", ["remote-ls", "--updates", "--columns=application,name,version,branch,ref,commit"])
 PREVIEW_ERASE = ("dnf", ["upgrade", "--refresh", "--best", "--allowerasing", "--assumeno"])
 FLATPAK_UPDATE = ("flatpak", ["update", "-y", "--noninteractive"])
 CHECK_FWUPD = ("fwupdmgr", ["get-updates", "--json", "--no-unreported-check"])

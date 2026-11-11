@@ -52,6 +52,39 @@ class Flatpak(unittest.TestCase):
         self.assertEqual(pkgs[1].version, "f44")
 
 
+    def test_ref_and_commit(self):
+        pkgs = backend.parse_flatpak_updates(
+            "net.thunderbird.Thunderbird\tThunderbird\t158.0\tstable\t"
+            "app/net.thunderbird.Thunderbird/x86_64/stable\t19c080261548\n")
+        self.assertEqual(pkgs[0].ref, "app/net.thunderbird.Thunderbird/x86_64/stable")
+        self.assertEqual(pkgs[0].commit, "19c080261548")
+
+    def test_alt_id(self):
+        info = (
+            "         Ref: app/net.thunderbird.Thunderbird/x86_64/stable\n"
+            "      Commit: b60be08538e4fcae7f96b4224d32fe84f4c65037f3319659728c9b6ea9165\u2026\n"
+            "      Alt-id: 19c0802615489de400d4f6303d9b99d53b2221186ae92b088ddaf0cc16569d46\n"
+        )
+        self.assertEqual(backend.parse_flatpak_alt_id(info),
+                         "19c0802615489de400d4f6303d9b99d53b2221186ae92b088ddaf0cc16569d46")
+        self.assertEqual(backend.parse_flatpak_alt_id("      Commit: abc\n"), "")
+
+    def test_drops_current_oci_refs(self):
+        # remote-ls on an OCI remote lists the image digest, which the
+        # installed copy keeps as its Alt-id: already up to date
+        digest = "19c0802615489de400d4f6303d9b99d53b2221186ae92b088ddaf0cc16569d46"
+        pkgs = [
+            backend.Package("Thunderbird", "158.0", "net.thunderbird.Thunderbird", "flatpak",
+                            "app/net.thunderbird.Thunderbird/x86_64/stable", digest[:12]),
+            backend.Package("XSane", "stable", "org.sane_project.xsane", "flatpak",
+                            "app/org.sane_project.xsane/x86_64/stable", "098ffe0f9ef6"),
+            backend.Package("vim", "9.2", "updates", "rpm"),
+        ]
+        ids = {"app/net.thunderbird.Thunderbird/x86_64/stable": {digest},
+               "app/org.sane_project.xsane/x86_64/stable": {"4aafe29bf406aa"}}
+        kept = backend.drop_current_flatpaks(pkgs, lambda ref: ids.get(ref, set()))
+        self.assertEqual([p.name for p in kept], ["XSane", "vim"])
+
 class Removals(unittest.TestCase):
     def test_removing_and_downgrading_only(self):
         rem = backend.parse_transaction_removals(read("erase-preview.txt"))

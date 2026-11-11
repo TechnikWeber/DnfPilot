@@ -384,7 +384,8 @@ class MainWindow(QWidget):
         if backend.have("snap"):
             queue.append((backend.CHECK_SNAP, parsed(backend.parse_snap_refresh)))
         if self.with_flatpak.isChecked() and backend.have("flatpak"):
-            queue.append((backend.CHECK_FLATPAK, parsed(backend.parse_flatpak_updates)))
+            queue.append((backend.CHECK_FLATPAK, parsed(
+                lambda out: backend.drop_current_flatpaks(backend.parse_flatpak_updates(out)))))
         if self.with_firmware.isChecked() and backend.have("fwupdmgr"):
             # exit code 2 = no updates; the JSON is printed either way
             queue.append((backend.CHECK_FWUPD, lambda c, o: parsed(backend.parse_fwupd_updates)(0, o)))

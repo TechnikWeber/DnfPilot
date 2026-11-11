@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2] - 2026-11-11
+
+- Flatpaks from Fedora's own OCI remote no longer show up as updates again
+  and again. `flatpak remote-ls --updates` compares the image digest with the
+  local commit, which never match on OCI remotes; DnfPilot now drops a ref
+  when the installed copy's Alt-id already is that digest, the same check
+  `flatpak update` makes.
+
 ## [0.3.1] - 2026-11-11
 
 - `dnfpilot-terminal` speaks English or German now, following the system
