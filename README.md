@@ -40,8 +40,10 @@ that point, cannot recover. Updating while the system is running avoids that.
 * Firmware updates (fwupd) and, if installed, Snap updates are part of the
   same run.
 * **New Fedora release?** A banner offers the upgrade (`dnf system-upgrade`:
-  download while you work, install on restart). Discover does not show new
-  releases on Fedora with the dnf5 backend.
+  download while you work, install on restart). It reads Fedora's official
+  release list, so it knows on release day – Discover depends on AppStream
+  metadata that can lag behind (Fedora 45 stayed marked as "development" for
+  over a week, [bug 2568647](https://bugzilla.redhat.com/show_bug.cgi?id=2568647)).
 * Afterwards it tells you whether a restart is needed: kernel, glibc, systemd,
   Plasma, Mesa or a graphics driver updated since boot. **Restart** is always
   one click away – except while akmods is still building the NVIDIA module for

@@ -1,5 +1,5 @@
 Name:           dnfpilot
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        Update Fedora with dnf and Flatpak, without Discover's offline update
 License:        MIT
@@ -54,6 +54,9 @@ install -Dm644 share/io.github.technikweber.dnfpilot.metainfo.xml \
 %{_metainfodir}/io.github.technikweber.dnfpilot.metainfo.xml
 
 %changelog
+* Wed Nov 11 2026 Philipp Weber - 0.2.1-1
+- Corrected upgrade banner text
+
 * Wed Nov 11 2026 Philipp Weber - 0.2.0-1
 - Firmware, Snap, Fedora release upgrade, NVIDIA restart guard
 

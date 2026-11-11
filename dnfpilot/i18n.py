@@ -100,8 +100,8 @@ DE = {
     "1 firmware update": "1 Firmware-Update",
     "{n} firmware updates": "{n} Firmware-Updates",
     "Upgrade…": "Upgrade …",
-    "Fedora {new} is available – you are on Fedora {cur}. Discover does not show this on Fedora with dnf5.":
-        "Fedora {new} ist verfügbar – du nutzt Fedora {cur}. Discover zeigt das unter Fedora mit dnf5 nicht an.",
+    "Fedora {new} is available – you are on Fedora {cur}.":
+        "Fedora {new} ist verfügbar – du nutzt Fedora {cur}.",
     "Upgrade to Fedora {new}…": "Auf Fedora {new} upgraden …",
     "Upgrade to Fedora {new}": "Upgrade auf Fedora {new}",
     "How it works:\n\n1. Fedora {cur} is brought fully up to date.\n2. All packages of Fedora {new} are downloaded while you keep working.\n3. After a restart they are installed. That takes 20–60 minutes; do not switch the computer off.\n\nBefore you start: back up important files, plug in the power cable. Third-party repositories (VS Code, Docker, Unity …) sometimes lag behind a new release and can block the download – the details then say which one.":

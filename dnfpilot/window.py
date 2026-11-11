@@ -172,7 +172,8 @@ class MainWindow(QWidget):
             "rgba(246, 116, 0", tr("Discover has scheduled an offline update. If it keeps failing, cancel it and update here instead."),
             tr("Cancel it and update"), lambda: self.start_job("discover"))
         self.banner.setVisible(backend.offline_update_pending())
-        # a new Fedora release (Discover does not report it with the dnf5 backend)
+        # a new Fedora release, read from fedoraproject.org/releases.json (Discover
+        # relies on AppStream metadata, which can lag behind a release)
         self.up_banner, self.up_label, self.up_btn = self._banner(
             "rgba(61, 174, 233", "", tr("Upgrade…"), lambda: self.start_job("sysup"))
         self.up_banner.setVisible(False)
@@ -432,7 +433,7 @@ class MainWindow(QWidget):
             text += " " + tr("Restart recommended.") + " (" + ", ".join(self.reboot_reasons[:4]) + ")"
         self.status.setText(text)
         if self.newest > self.current > 0:
-            self.up_label.setText(tr("Fedora {new} is available – you are on Fedora {cur}. Discover does not show this on Fedora with dnf5.",
+            self.up_label.setText(tr("Fedora {new} is available – you are on Fedora {cur}.",
                                      new=self.newest, cur=self.current))
             self.up_btn.setText(tr("Upgrade to Fedora {new}…", new=self.newest))
         self.up_banner.setVisible(self.newest > self.current > 0)

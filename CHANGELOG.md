@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1] - 2026-11-11
+
+- Corrected the reason given for Discover not offering a new Fedora release:
+  it is not the dnf5 backend, but Fedora's AppStream metadata, which kept
+  Fedora 45 marked as "development" after its release
+  ([bug 2568647](https://bugzilla.redhat.com/show_bug.cgi?id=2568647)). The
+  upgrade banner no longer names a cause.
+
 ## [0.2.0] - 2026-11-11
 
 - **New Fedora release:** a banner says when the next Fedora is out and
