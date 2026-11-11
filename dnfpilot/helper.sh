@@ -15,6 +15,7 @@
 #   firmware         fwupdmgr refresh + update (no reboot prompt; the GUI asks)
 #   snap             snap refresh
 #   sysup-download:N dnf system-upgrade download --releasever=N
+#   sysup-download-erase:N  the same with --allowerasing (after the user saw the list)
 
 export LC_ALL=C LANG=C
 # keep dnf off the terminal-only progress bars and colours
@@ -49,6 +50,13 @@ run_action() {
                 ''|*[!0-9]*) echo "bad release: $ver" >&2; return 2 ;;
             esac
             dnf system-upgrade download --releasever="$ver" -y </dev/null
+            ;;
+        sysup-download-erase:*)
+            ver="${1#*:}"
+            case "$ver" in
+                ''|*[!0-9]*) echo "bad release: $ver" >&2; return 2 ;;
+            esac
+            dnf system-upgrade download --releasever="$ver" --allowerasing -y </dev/null
             ;;
         *)                echo "unknown action: $1" >&2; return 2 ;;
     esac

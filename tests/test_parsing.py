@@ -151,6 +151,41 @@ class Releases(unittest.TestCase):
         self.assertEqual(backend.parse_newest_release(""), 0)
 
 
+class SysupPreview(unittest.TestCase):
+    def test_real_preview(self):
+        # captured from `dnf --releasever=45 distro-sync --assumeno` on Fedora 44, trimmed
+        p = backend.parse_sysup_preview(1, read("sysup-preview.txt"))
+        self.assertTrue(p.ok)
+        self.assertEqual(p.counts["upgrading"], 2406)
+        self.assertEqual(p.counts["downgrading"], 20)
+        self.assertEqual(p.download, "5 GiB")
+        self.assertEqual(p.removed[0], "kernel 0:7.2.13-200.fc44")
+        self.assertIn("python3-simpleaudio 0:1.0.4-21.fc44", p.removed)
+        self.assertEqual(len(p.removed), 6)  # downgrades are not removals
+        self.assertFalse(p.needs_erase)
+
+    def test_conflict_suggests_allowerasing(self):
+        text = (
+            "Updating and loading repositories:\n"
+            "Repositories loaded.\n"
+            "Failed to resolve the transaction:\n"
+            "Problem: package oldtool-1.0-1.fc44.x86_64 requires libfoo.so.1()(64bit), but none of the providers can be installed\n"
+            "  - libfoo-1.0-1.fc44.x86_64 does not belong to a distupgrade repository\n"
+            "You can try to add to command line:\n"
+            "  --allowerasing to allow removing of installed packages to resolve problems\n"
+        )
+        p = backend.parse_sysup_preview(1, text)
+        self.assertFalse(p.ok)
+        self.assertTrue(p.needs_erase)
+        self.assertEqual(len(p.problems), 2)
+        self.assertTrue(p.problems[0].startswith("Problem: package oldtool"))
+
+    def test_command(self):
+        prog, args = backend.sysup_preview_command(45, True, "/tmp/x")
+        self.assertEqual(prog, "dnf")
+        self.assertEqual(args, ["--releasever=45", "--setopt=cachedir=/tmp/x", "distro-sync", "--assumeno", "--allowerasing"])
+
+
 class Jobs(unittest.TestCase):
     def test_every_job_uses_known_actions(self):
         helper = backend.helper_script()
@@ -168,6 +203,8 @@ class Jobs(unittest.TestCase):
     def test_sysup(self):
         self.assertEqual([s.action for s in backend.make_job("sysup", release=45).steps],
                          ["upgrade", "sysup-download:45"])
+        self.assertEqual([s.action for s in backend.make_job("sysup", release=45, erase=True).steps],
+                         ["upgrade", "sysup-download-erase:45"])
 
     def test_download_only_progress_reaches_one_before_install(self):
         prog = backend.DnfProgress(dl_split=1.0)

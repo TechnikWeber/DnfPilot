@@ -40,7 +40,9 @@ that point, cannot recover. Updating while the system is running avoids that.
 * Firmware updates (fwupd) and, if installed, Snap updates are part of the
   same run.
 * **New Fedora release?** A banner offers the upgrade (`dnf system-upgrade`:
-  download while you work, install on restart). It reads Fedora's official
+  download while you work, install on restart). A dry run comes first and
+  shows how many packages change, the download size and anything that would
+  be removed. It reads Fedora's official
   release list, so it knows on release day – Discover depends on AppStream
   metadata that can lag behind (Fedora 45 stayed marked as "development" for
   over a week, [bug 2568647](https://bugzilla.redhat.com/show_bug.cgi?id=2568647)).

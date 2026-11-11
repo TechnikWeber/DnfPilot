@@ -1,0 +1,42 @@
+Package                                                    Arch   Version                                Repository                            Size
+Removing:
+ kernel                                                    x86_64 0:7.2.13-200.fc44                      updates                            0.0   B
+ kernel-core                                               x86_64 0:7.2.13-200.fc44                      updates                          101.3 MiB
+ kernel-modules                                            x86_64 0:7.2.13-200.fc44                      updates                           73.2 MiB
+ kernel-modules-core                                       x86_64 0:7.2.13-200.fc44                      updates                           47.0 MiB
+ kernel-modules-extra                                      x86_64 0:7.2.13-200.fc44                      updates                            2.6 MiB
+Removing dependent packages:
+ python3-simpleaudio                                       x86_64 0:1.0.4-21.fc44                        6ecc2dfaa0dc41e5ad51e007707a786b   2.2 MiB
+Downgrading:
+ akonadi-calendar                                          x86_64 0:26.08.2-1.fc45                       fedora                             4.3 MiB
+   replacing akonadi-calendar                              x86_64 0:26.08.2-2.fc44                       updates                            4.3 MiB
+ bind-libs                                                 x86_64 32:9.18.51^git20261102.973d8646-1.fc45 updates                            3.7 MiB
+   replacing bind-libs                                     x86_64 32:9.18.51^git20261102.973d8646-3.fc44 updates                            3.7 MiB
+Upgrading:
+ 7zip                                                      x86_64 0:26.04-1.fc45                         updates                            3.4 MiB
+   replacing 7zip                                          x86_64 0:26.04-1.fc44                         updates                            3.3 MiB
+ Box2D                                                     x86_64 0:3.1.1-3.fc45                         fedora                           401.4 KiB
+   replacing Box2D                                         x86_64 0:2.4.2-7.fc44                         6ecc2dfaa0dc41e5ad51e007707a786b 251.5 KiB
+Installing:
+ kernel                                                    x86_64 0:7.3.3-300.fc45                       updates                            0.0   B
+ kernel-core                                               x86_64 0:7.3.3-300.fc45                       updates                          102.3 MiB
+Installing dependencies:
+ f45-backgrounds-base                                      noarch 0:45.0.4-1.fc45                        updates                            9.7 MiB
+ f45-backgrounds-kde                                       noarch 0:45.0.4-1.fc45                        updates                            3.9 KiB
+Installing weak dependencies:
+ libcanberra-backend-alsa                                  x86_64 0:0.30-52.fc45                         fedora                            23.0 KiB
+ libcanberra-backend-gstreamer                             x86_64 0:0.30-52.fc45                         fedora                            23.0 KiB
+
+Transaction Summary:
+ Installing:        40 packages
+ Upgrading:       2406 packages
+ Replacing:       2436 packages
+ Removing:           6 packages
+ Downgrading:       20 packages
+
+Updating and loading repositories:
+ RPM Fusion for Fedora 45 - Nonfree - U 100% |   7.0 KiB/s |  22.7 KiB |  00m03s
+Repositories loaded.
+Total size of inbound packages is 5 GiB. Need to download 5 GiB.
+After this operation, 197 MiB extra will be used (install 16 GiB, remove 16 GiB).
+Operation aborted by the user.

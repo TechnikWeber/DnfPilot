@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0] - 2026-11-11
+
+- **Dry run before a release upgrade:** DnfPilot first works out the upgrade
+  without changing anything and shows a summary – packages updated and added,
+  download size, packages that go back a version and every package that would
+  be removed. Only then does the download start.
+- If dnf can only upgrade by removing packages, it says which problem blocks
+  it and offers to check with `--allowerasing`; the list of removals comes
+  before anything is downloaded.
+- The metadata for the dry run lands in its own cache and is deleted again.
+
 ## [0.2.1] - 2026-11-11
 
 - Corrected the reason given for Discover not offering a new Fedora release:

@@ -120,6 +120,22 @@ DE = {
     "Only {free:.1f} GB are free on the system disk. An upgrade needs at least {need} GB for the download and the installation – free up space first (e.g. old files in ~/Downloads, ~/.cache, unused Flatpaks: flatpak uninstall --unused).":
         "Auf der Systemplatte sind nur {free:.1f} GB frei. Ein Upgrade braucht mindestens {need} GB für Download und Installation – erst Platz schaffen (z. B. alte Dateien in ~/Downloads, ~/.cache, ungenutzte Flatpaks: flatpak uninstall --unused).",
     "Try anyway": "Trotzdem versuchen",
+    # 0.3.0 – upgrade preview
+    "Check the upgrade": "Upgrade prüfen",
+    "Checking the upgrade to Fedora {new} – this takes a minute…": "Upgrade auf Fedora {new} wird geprüft – das dauert eine Minute …",
+    "(see details)": "(siehe Details)",
+    "dnf can only upgrade if it may remove some packages:": "dnf kann nur upgraden, wenn es einige Pakete entfernen darf:",
+    "Check which packages would be removed?": "Prüfen, welche Pakete entfernt würden?",
+    "Check": "Prüfen",
+    "The upgrade cannot be done right now – nothing was changed:": "Das Upgrade geht gerade nicht – es wurde nichts verändert:",
+    "Often a third-party repository is not ready for the new release yet. Try again in a few days.":
+        "Oft ist eine fremde Paketquelle noch nicht für die neue Version bereit. In ein paar Tagen noch einmal versuchen.",
+    "{n} packages are updated, {i} added.": "{n} Pakete werden aktualisiert, {i} kommen dazu.",
+    "Download: {size}.": "Download: {size}.",
+    "{n} packages go back a version – normal shortly after a release.": "{n} Pakete gehen eine Version zurück – normal kurz nach einem Release.",
+    "Removed:": "Entfernt:",
+    "(only an old kernel – normal)": "(nur ein alter Kernel – normal)",
+    "Start the download now?": "Download jetzt starten?",
 }
 
 

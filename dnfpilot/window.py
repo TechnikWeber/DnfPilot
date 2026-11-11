@@ -26,9 +26,10 @@ STEP_TITLES = {
     "firmware": "Updating firmware",
     "snap": "Updating Snap apps",
     "sysup-download": "Downloading the new Fedora version",
+    "sysup-download-erase": "Downloading the new Fedora version",
 }
-DNF_STEPS = {"upgrade", "upgrade-erase", "offline-download", "sysup-download"}
-DOWNLOAD_ONLY = {"offline-download", "sysup-download"}
+DNF_STEPS = {"upgrade", "upgrade-erase", "offline-download", "sysup-download", "sysup-download-erase"}
+DOWNLOAD_ONLY = {"offline-download", "sysup-download", "sysup-download-erase"}
 SOURCE_LABEL = {"flatpak": "Flatpak", "firmware": "Firmware", "snap": "Snap"}
 
 
@@ -452,7 +453,10 @@ class MainWindow(QWidget):
             return
         if key == "flatpak" and not backend.have("flatpak"):
             return
-        if key == "sysup" and not self._confirm_sysup():
+        if key == "sysup":
+            if self._confirm_sysup():
+                self._busy(True)
+                self._preview_sysup(erase=False)
             return
         job = backend.make_job(
             key,
@@ -489,10 +493,65 @@ class MainWindow(QWidget):
             "Before you start: back up important files, plug in the power cable. Third-party repositories "
             "(VS Code, Docker, Unity …) sometimes lag behind a new release and can block the download – "
             "the details then say which one.", new=self.newest, cur=self.current), parent=self)
-        go = box.addButton(tr("Download Fedora {new}", new=self.newest), QMessageBox.AcceptRole)
+        go = box.addButton(tr("Check the upgrade"), QMessageBox.AcceptRole)
         box.addButton(tr("Cancel"), QMessageBox.RejectRole)
         box.exec()
         return box.clickedButton() is go
+
+    def _preview_sysup(self, erase: bool):
+        """Dry run first: how many packages, how big, what goes away."""
+        import shutil as _sh
+        new = self.newest
+        self.step.setText(tr("Checking the upgrade to Fedora {new} – this takes a minute…", new=new))
+        self._set_progress(None)
+        cache = backend.preview_cachedir()
+
+        def done(code, out):
+            _sh.rmtree(cache, ignore_errors=True)
+            p = backend.parse_sysup_preview(code, out)
+            title = tr("Upgrade to Fedora {new}", new=new)
+            if not p.ok:
+                self.log_fold.set_open(True)
+                problems = "\n".join(f"  • {x}" for x in p.problems[:12]) or tr("(see details)")
+                if p.needs_erase and not erase:
+                    box = QMessageBox(QMessageBox.Warning, title, tr(
+                        "dnf can only upgrade if it may remove some packages:") + "\n\n" + problems + "\n\n" +
+                        tr("Check which packages would be removed?"), parent=self)
+                    go = box.addButton(tr("Check"), QMessageBox.AcceptRole)
+                    box.addButton(tr("Cancel"), QMessageBox.RejectRole)
+                    box.exec()
+                    if box.clickedButton() is go:
+                        self._preview_sysup(erase=True)
+                        return
+                else:
+                    QMessageBox.critical(self, title, tr(
+                        "The upgrade cannot be done right now – nothing was changed:") + "\n\n" + problems + "\n\n" +
+                        tr("Often a third-party repository is not ready for the new release yet. Try again in a few days."))
+                self._finish_idle(tr("Ready."))
+                return
+            c = p.counts
+            lines = [tr("{n} packages are updated, {i} added.", n=c.get("upgrading", 0), i=c.get("installing", 0))]
+            if p.download:
+                lines.append(tr("Download: {size}.", size=p.download))
+            if c.get("downgrading"):
+                lines.append(tr("{n} packages go back a version – normal shortly after a release.", n=c["downgrading"]))
+            if p.removed:
+                lines.append("")
+                lines.append(tr("Removed:"))
+                lines += [f"  • {r}" for r in p.removed[:25]] + (["  …"] if len(p.removed) > 25 else [])
+                if all(r.startswith("kernel") for r in p.removed):
+                    lines.append(tr("(only an old kernel – normal)"))
+            box = QMessageBox(QMessageBox.Question, title, "\n".join(lines) + "\n\n" +
+                              tr("Start the download now?"), parent=self)
+            go = box.addButton(tr("Download Fedora {new}", new=new), QMessageBox.AcceptRole)
+            box.addButton(tr("Cancel"), QMessageBox.RejectRole)
+            box.exec()
+            if box.clickedButton() is go:
+                self._run_job(backend.make_job("sysup", release=new, erase=erase))
+            else:
+                self._finish_idle(tr("Ready."))
+
+        self._run(backend.sysup_preview_command(new, erase, str(cache)), None, done)
 
     def _preview_erase(self, job: Job):
         self.step.setText(tr("Checking for changes…"))

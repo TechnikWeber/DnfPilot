@@ -156,6 +156,76 @@ def parse_transaction_removals(text: str) -> list[str]:
     return out
 
 
+# ---------------------------------------------------------------- upgrade preview
+
+_SUMMARY_ROW = re.compile(r"^\s+(Installing|Upgrading|Replacing|Removing|Downgrading):\s+(\d+) packages?\s*$")
+_DOWNLOAD = re.compile(r"Need to download ([\d.,]+\s*[KMGT]?i?B)")
+
+
+@dataclass
+class SysupPreview:
+    """What `dnf --releasever=N distro-sync --assumeno` says about an upgrade."""
+    ok: bool
+    counts: dict
+    download: str
+    removed: list[str]
+    problems: list[str]
+    needs_erase: bool  # dnf suggests --allowerasing
+
+
+def parse_sysup_preview(code: int, text: str) -> SysupPreview:
+    counts: dict[str, int] = {}
+    summary = False
+    for line in text.splitlines():
+        if line.startswith("Transaction Summary"):
+            summary = True
+            continue
+        m = _SUMMARY_ROW.match(line) if summary else None
+        if m:
+            counts[m.group(1).lower()] = int(m.group(2))
+    m = _DOWNLOAD.search(text)
+    removed = []
+    section = ""
+    for line in text.splitlines():
+        sec = _SECTION.match(line.strip()) if not line.startswith(" ") else None
+        if sec:
+            section = sec.group(1).lower()
+            continue
+        if section.startswith("removing") and line.startswith(" ") and not line.lstrip().startswith("replacing"):
+            row = _TABLE_ROW.match(line)
+            if row:
+                removed.append(f"{row.group(1)} {row.group(3)}")
+    failed = "Failed to resolve the transaction" in text
+    problems = []
+    if failed:
+        grab = False
+        for line in text.splitlines():
+            if line.startswith("Failed to resolve"):
+                grab = True
+                continue
+            if grab and line.startswith("You can try"):
+                break
+            if grab and line.strip():
+                problems.append(line.strip())
+    ok = not failed and (code == 0 or "Operation aborted" in text)
+    return SysupPreview(ok, counts, m.group(1) if m else "", removed, problems,
+                        failed and "--allowerasing" in text)
+
+
+def sysup_preview_command(release: int, erase: bool, cachedir: str) -> tuple[str, list[str]]:
+    """Dry run of the upgrade as a normal user; the metadata goes to its own
+    cache directory so it can be removed afterwards."""
+    args = [f"--releasever={int(release)}", f"--setopt=cachedir={cachedir}", "distro-sync", "--assumeno"]
+    if erase:
+        args.append("--allowerasing")
+    return "dnf", args
+
+
+def preview_cachedir() -> Path:
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return base / "dnfpilot" / "sysup-preview"
+
+
 # ---------------------------------------------------------------- progress
 
 # "[ 65/151] Upgrading vim-enhanced-2:9.2. 100% | ..." -- the name column is
@@ -255,7 +325,7 @@ class Job:
 
 
 def make_job(key: str, with_flatpak: bool = True, with_firmware: bool = False,
-             with_snap: bool = False, release: int = 0) -> Job:
+             with_snap: bool = False, release: int = 0, erase: bool = False) -> Job:
     up = Step("upgrade", 8)
     extra = ([Step("snap", 1)] if with_snap else []) + ([Step("firmware", 2)] if with_firmware else [])
     fp = [Step("flatpak", 2)] if with_flatpak else []
@@ -269,7 +339,9 @@ def make_job(key: str, with_flatpak: bool = True, with_firmware: bool = False,
         "pkcache": lambda: Job("pkcache", [Step("pkcache", 1)], reboot_after=False),
         "offline": lambda: Job("offline", [Step("offline-download", 8)], reboot_after=False),
         "offline-reboot": lambda: Job("offline-reboot", [Step("offline-reboot", 1)], reboot_after=False),
-        "sysup": lambda: Job("sysup", [Step("upgrade", 4), Step(f"sysup-download:{int(release)}", 8)], reboot_after=False),
+        "sysup": lambda: Job("sysup", [Step("upgrade", 4),
+                                       Step(f"sysup-download{'-erase' if erase else ''}:{int(release)}", 8)],
+                             reboot_after=False),
     }
     return jobs[key]()
 
