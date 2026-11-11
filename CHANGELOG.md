@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.1] - 2026-11-11
 
 - `dnfpilot-terminal` speaks English or German now, following the system
   locale like the main app (`DNFPILOT_LANG=en` or `=de` to override).
