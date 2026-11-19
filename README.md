@@ -33,7 +33,9 @@ that point, cannot recover. Updating while the system is running avoids that.
 
 ## What it does
 
-* Lists the waiting dnf and Flatpak updates when it opens.
+* Lists the waiting dnf and Flatpak updates when it opens, with a rough
+  download size (*"About 350 MB to download"*): dnf's sizes plus Flatpak's,
+  which is an upper bound since Flatpak usually fetches only the changes.
 * **Update now** asks for your password once (polkit), then runs
   `dnf upgrade --refresh` and `flatpak update`. The bar follows dnf package by
   package; **Details** shows the full output.

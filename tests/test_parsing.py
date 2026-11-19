@@ -38,6 +38,32 @@ class CheckUpgrade(unittest.TestCase):
         self.assertEqual(backend.parse_check_upgrade(text), [])
 
 
+class DownloadSize(unittest.TestCase):
+    def test_repoquery_total(self):
+        text = ("Updating and loading repositories:\n"
+                "Repositories loaded.\n"
+                "bash.x86_64 1983893\n"
+                "kernel-core.x86_64 20000000\n"
+                "bash.x86_64 1983893\n")
+        self.assertEqual(backend.parse_repoquery_total(text), 21_983_893)
+        self.assertEqual(backend.parse_repoquery_total(""), 0)
+
+    def test_parse_size(self):
+        self.assertEqual(backend.parse_size("685.2 MB"), 685_200_000)
+        self.assertEqual(backend.parse_size("1.0 GB"), 1_000_000_000)
+        self.assertEqual(backend.parse_size("12 kB"), 12_000)
+        self.assertEqual(backend.parse_size("512 bytes"), 512)
+        self.assertEqual(backend.parse_size(""), 0)
+        self.assertEqual(backend.parse_size("unknown"), 0)
+
+    def test_format_size(self):
+        self.assertEqual(backend.format_size(1_234_000_000), "1.2 GB")
+        self.assertEqual(backend.format_size(350_400_000), "350 MB")
+        self.assertEqual(backend.format_size(2_500_000), "2.5 MB")
+        self.assertEqual(backend.format_size(800_000), "800 kB")
+        self.assertEqual(backend.format_size(10), "1 kB")
+
+
 class Flatpak(unittest.TestCase):
     def test_dedupes_branches(self):
         text = (
@@ -51,6 +77,12 @@ class Flatpak(unittest.TestCase):
         self.assertEqual(pkgs[0].version, "158.0")
         self.assertEqual(pkgs[1].version, "f44")
 
+
+    def test_download_size(self):
+        pkgs = backend.parse_flatpak_updates(
+            "org.gimp.GIMP\tGIMP\t3.2\tstable\tapp/org.gimp.GIMP/x86_64/stable\tabc\t685.2 MB\n"
+            "org.kde.Platform\tKDE\t\t6.9\truntime/org.kde.Platform/x86_64/6.9\tdef\t\n")
+        self.assertEqual([p.size for p in pkgs], [685_200_000, 0])
 
     def test_ref_and_commit(self):
         pkgs = backend.parse_flatpak_updates(

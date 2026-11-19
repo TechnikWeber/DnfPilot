@@ -1,5 +1,5 @@
 Name:           dnfpilot
-Version:        0.3.2
+Version:        0.3.3
 Release:        1%{?dist}
 Summary:        Update Fedora with dnf and Flatpak, without Discover's offline update
 License:        MIT
@@ -54,6 +54,9 @@ install -Dm644 share/io.github.technikweber.dnfpilot.metainfo.xml \
 %{_metainfodir}/io.github.technikweber.dnfpilot.metainfo.xml
 
 %changelog
+* Thu Nov 19 2026 Philipp Weber - 0.3.3-1
+- The overview shows roughly how much the updates will download
+
 * Wed Nov 11 2026 Philipp Weber - 0.3.2-1
 - Fedora OCI flatpaks are no longer listed as updates forever
 

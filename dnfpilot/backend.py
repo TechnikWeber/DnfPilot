@@ -26,6 +26,7 @@ class Package:
     kind: str  # "rpm" or "flatpak"
     ref: str = ""  # flatpak only: app/<id>/<arch>/<branch>
     commit: str = ""  # flatpak only: the remote commit (an image digest on OCI remotes)
+    size: int = 0  # flatpak only: download size in bytes (0 = unknown)
 
 
 # ---------------------------------------------------------------- dnf check
@@ -55,23 +56,71 @@ def parse_check_upgrade(text: str) -> list[Package]:
     return pkgs
 
 
+# ---------------------------------------------------------------- download size
+
+_REPOQUERY_ROW = re.compile(r"^(\S+\.\S+)\s+(\d+)$")
+
+
+def parse_repoquery_total(text: str) -> int:
+    """Sum of `dnf repoquery --upgrades --queryformat '%{name}.%{arch} %{downloadsize}'`.
+
+    One row per package that has an upgrade, the size in bytes. It is what dnf
+    downloads (Fedora has no delta RPMs), give or take new dependencies.
+    """
+    sizes: dict[str, int] = {}
+    for line in text.splitlines():
+        m = _REPOQUERY_ROW.match(line.strip())
+        if m:
+            sizes[m.group(1)] = max(sizes.get(m.group(1), 0), int(m.group(2)))
+    return sum(sizes.values())
+
+
+_UNITS = {"b": 1, "bytes": 1, "kb": 1000, "mb": 1000**2, "gb": 1000**3, "tb": 1000**4}
+
+
+def parse_size(text: str) -> int:
+    """Flatpak's human size (``685.2 MB``, ``12 kB``; decimal units) in bytes, 0 if unknown."""
+    m = re.match(r"^\s*([\d.,]+)\s*([a-zA-Z]+)\s*$", text or "")
+    if not m or m.group(2).lower() not in _UNITS:
+        return 0
+    try:
+        return int(float(m.group(1).replace(",", ".")) * _UNITS[m.group(2).lower()])
+    except ValueError:
+        return 0
+
+
+def format_size(n: int) -> str:
+    """Round a byte count for people: ``800 kB``, ``350 MB``, ``1.2 GB``."""
+    if n >= 1000**3:
+        return f"{n / 1000**3:.1f} GB"
+    if n >= 10 * 1000**2:
+        return f"{round(n / 1000**2)} MB"
+    if n >= 1000**2:
+        return f"{n / 1000**2:.1f} MB"
+    return f"{max(1, round(n / 1000))} kB"
+
+
 # ---------------------------------------------------------------- flatpak
 
 def parse_flatpak_updates(text: str) -> list[Package]:
-    """Parse `flatpak remote-ls --updates --columns=application,name,version,branch,ref,commit`."""
+    """Parse `flatpak remote-ls --updates --columns=application,name,version,branch,ref,commit,download-size`.
+
+    The download size is that of the whole ref; flatpak usually fetches only a
+    delta, so it is an upper bound.
+    """
     pkgs: list[Package] = []
     seen: set[tuple[str, str]] = set()
     for line in text.splitlines():
         cols = [c.strip() for c in line.split("\t")]
         if len(cols) < 2 or not cols[0]:
             continue
-        cols += [""] * (6 - len(cols))
-        app, name, version, branch, ref, commit = cols[:6]
+        cols += [""] * (7 - len(cols))
+        app, name, version, branch, ref, commit, size = cols[:7]
         key = (app, branch)
         if key in seen:
             continue
         seen.add(key)
-        pkgs.append(Package(name or app, version or branch, app, "flatpak", ref, commit))
+        pkgs.append(Package(name or app, version or branch, app, "flatpak", ref, commit, parse_size(size)))
     return pkgs
 
 
@@ -405,7 +454,10 @@ def pkexec_command(actions: list[str]) -> tuple[str, list[str]]:
 
 
 CHECK_DNF = ("dnf", ["check-upgrade", "--refresh", "--assumeno"])
-CHECK_FLATPAK = ("flatpak", ["remote-ls", "--updates", "--columns=application,name,version,branch,ref,commit"])
+SIZE_DNF = ("dnf", ["repoquery", "--upgrades", "--latest-limit=1",
+                    "--queryformat", "%{name}.%{arch} %{downloadsize}\\n"])
+CHECK_FLATPAK = ("flatpak", ["remote-ls", "--updates",
+                             "--columns=application,name,version,branch,ref,commit,download-size"])
 PREVIEW_ERASE = ("dnf", ["upgrade", "--refresh", "--best", "--allowerasing", "--assumeno"])
 FLATPAK_UPDATE = ("flatpak", ["update", "-y", "--noninteractive"])
 CHECK_FWUPD = ("fwupdmgr", ["get-updates", "--json", "--no-unreported-check"])

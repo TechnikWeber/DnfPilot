@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3] - 2026-11-19
+
+- The overview shows roughly how much the updates will download, for
+  example *"About 350 MB to download"*. The dnf part comes from
+  `dnf repoquery --upgrades` (the packages' download sizes), the Flatpak part
+  from the `download-size` column of `flatpak remote-ls --updates`, which
+  counts whole apps although Flatpak usually fetches only the changes.
+
 ## [0.3.2] - 2026-11-11
 
 - Flatpaks from Fedora's own OCI remote no longer show up as updates again

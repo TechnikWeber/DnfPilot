@@ -357,14 +357,21 @@ class MainWindow(QWidget):
         self._set_progress(None)
         self.banner.setVisible(backend.offline_update_pending())
         self.updates = []
+        self.dnf_bytes = 0
         self._check_failed = False
 
         def dnf_done(code, out):
             # check-upgrade: 100 = updates available, 0 = none
             if code in (0, 100):
                 self.updates += backend.parse_check_upgrade(out)
+                if code == 100:   # updates: ask how big they are (cache is fresh now)
+                    queue.insert(0, (backend.SIZE_DNF, size_done))
             else:
                 self._check_failed = True
+
+        def size_done(code, out):
+            if code == 0:
+                self.dnf_bytes = backend.parse_repoquery_total(out)
 
         def parsed(parser):
             def done(code, out):
@@ -431,6 +438,9 @@ class MainWindow(QWidget):
             text = tr("{a} available.", a=parts[0])
         else:
             text = tr("Everything is up to date.")
+        size = self.dnf_bytes + sum(p.size for p in self.updates if p.kind == "flatpak")
+        if parts and size and not self._check_failed:
+            text += " " + tr("About {size} to download.", size=backend.format_size(size))
         if self.reboot_needed:
             text += " " + tr("Restart recommended.") + " (" + ", ".join(self.reboot_reasons[:4]) + ")"
         self.status.setText(text)

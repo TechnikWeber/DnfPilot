@@ -16,6 +16,7 @@ DE = {
     "1 app update": "1 App-Update",
     "{a} and {b} available.": "{a} und {b} verfügbar.",
     "{a} available.": "{a} verfügbar.",
+    "About {size} to download.": "Download etwa {size}.",
     "Could not check for updates – see details.": "Suche nach Updates fehlgeschlagen – siehe Details.",
     "Restart recommended.": "Neustart empfohlen.",
     "Available updates ({n})": "Verfügbare Updates ({n})",
